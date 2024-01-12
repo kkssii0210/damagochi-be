@@ -16,7 +16,7 @@ public class TiredScheduler {
     private final MongRepository mongRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Scheduled( cron = "0 05 * * * *")   // 매 시 0분 0초 메소드 실행
+    @Scheduled( cron = "0 32 * * * *")   // 매 시 0분 0초 메소드 실행
     public void tiredSchedule() {
         Mong mong = mongRepository.findByMemberId("hr");
 //        TODO : 나중에 리스트로 교체, 시 분 제대로 맞추기
