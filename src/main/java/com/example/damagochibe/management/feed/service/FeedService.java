@@ -1,5 +1,7 @@
 package com.example.damagochibe.management.feed.service;
 
+import com.example.damagochibe.management.global.cooldown.entity.Cooldown;
+import com.example.damagochibe.management.global.cooldown.repository.CooldownRepository;
 import com.example.damagochibe.management.mong.repository.MongRepository;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +13,11 @@ import org.springframework.stereotype.Service;
 public class FeedService {
 
     private final MongRepository mongRepository;
-
-    private boolean feedCooldown = false;
+    private final CooldownRepository cooldownRepository;
 
     public ResponseEntity feed(Mong mong) {
-        if (!feedCooldown) {
-            Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        if (!cooldownRepository.findByMongId(myMong.getId()).isFeed()) {
             if (myMong.getFeed() != 100) {
                 myMong.setFeed(Math.min(myMong.getFeed() + 10, 100));
                 mongRepository.save(myMong);
@@ -29,14 +30,25 @@ public class FeedService {
         }
     }
 
-    public void feedCool() {
-        feedCooldown = true;
+    public void feedCool(Mong mong) {
+        Mong myMong  = mongRepository.findByMemberId(mong.getMemberId());
+        Long mongId = myMong.getId();
+        Cooldown cooldown = cooldownRepository.findByMongId(mongId);
+        cooldown.setFeed(true);
+        cooldownRepository.save(cooldown);
         try {
             Thread.sleep(10000);
-            feedCooldown = false;
+            cooldown.setFeed(false);
+            cooldownRepository.save(cooldown);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         System.out.println("feed 쿨다운 완료");
+    }
+
+    public void feedDirty(Mong mong) {
+        Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        myMong.setClean(false);
+        mongRepository.save(myMong);
     }
 }

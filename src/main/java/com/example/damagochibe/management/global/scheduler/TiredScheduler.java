@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @EnableScheduling
 @RequiredArgsConstructor
@@ -18,12 +20,15 @@ public class TiredScheduler {
 
     @Scheduled( cron = "0 32 * * * *")   // 매 시 0분 0초 메소드 실행
     public void tiredSchedule() {
-        Mong mong = mongRepository.findByMemberId("hr");
+        List<Mong> mongList = mongRepository.findAll();
 //        TODO : 나중에 리스트로 교체, 시 분 제대로 맞추기
-        mong.setTired(Math.max(0, mong.getTired() - 5));
-        mong.setFeed(Math.max(0, mong.getFeed() - 20));
-        System.out.println("mong.getTired() = " + mong.getTired());
-        mongRepository.save(mong);
+
+        for (Mong mong : mongList ) {
+            mong.setTired(Math.max(0, mong.getTired() - 5));
+            mong.setFeed(Math.max(0, mong.getFeed() - 20));
+            System.out.println("mong.getTired() = " + mong.getTired());
+            mongRepository.save(mong);
+        }
 
         simpMessagingTemplate.convertAndSend("/topic/management", "ㄹㅇ");
     }
