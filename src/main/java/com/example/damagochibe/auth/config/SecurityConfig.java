@@ -1,5 +1,6 @@
 package com.example.damagochibe.auth.config;
 
+import com.example.damagochibe.auth.oauth.service.OauthService;
 import com.example.damagochibe.auth.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ public class SecurityConfig {
     private final TokenExceptionFilter tokenExceptionFilter;
     private final TokenEntryPoint tokenEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

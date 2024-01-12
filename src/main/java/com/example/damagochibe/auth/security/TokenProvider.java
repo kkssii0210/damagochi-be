@@ -83,8 +83,8 @@ public class TokenProvider {
         return expiration.getTime() - now.getTime();
     }
     // 소셜 멤버인지 아닌지 논리값 리턴
-    public Boolean isSocialMember(String refreshToken) {
-        Long memberId = refreshTokenRepository.findMemberIdByToken(refreshToken);
+    public Boolean isSocialMember(String accessToken) {
+        Long memberId = refreshTokenRepository.findMemberIdByAccessToken(accessToken);
         Boolean isSocialMember = memberRepository.checkSocialMemberByMemberId(memberId);
         return isSocialMember != null ? isSocialMember : false; //NullPointerException 나면 여기임
     }
