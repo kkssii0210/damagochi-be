@@ -1,5 +1,7 @@
 package com.example.damagochibe.management.stroke.service;
 
+import com.example.damagochibe.management.global.cooldown.entity.Cooldown;
+import com.example.damagochibe.management.global.cooldown.repository.CooldownRepository;
 import com.example.damagochibe.management.mong.repository.MongRepository;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +13,11 @@ import org.springframework.stereotype.Service;
 public class StrokeService {
 
     private final MongRepository mongRepository;
-    private boolean strokeCooldown = false;
+    private final CooldownRepository cooldownRepository;
 
     public ResponseEntity stroke(Mong mong) {
-        System.out.println("strokeCooldown = " + strokeCooldown);
-        if (!strokeCooldown) {
-            Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        if (!cooldownRepository.findByMongId(myMong.getId()).isStroke()) {
             if (myMong.getTired() != 100) {
                 myMong.setTired(Math.min(myMong.getTired() + 10, 100));
                 mongRepository.save(myMong);
@@ -29,14 +30,19 @@ public class StrokeService {
         }
     }
 
-    public void strokeCool() {
-        strokeCooldown = true;
+    public void strokeCool(Mong mong) {
+        Mong myMong  = mongRepository.findByMemberId(mong.getMemberId());
+        Long mongId = myMong.getId();
+        Cooldown cooldown = cooldownRepository.findByMongId(mongId);
+        cooldown.setStroke(true);
+        cooldownRepository.save(cooldown);
         try {
             Thread.sleep(10000);
-            strokeCooldown = false;
+            cooldown.setStroke(false);
+            cooldownRepository.save(cooldown);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("stroke 쿨다운 완료");
+        System.out.println("feed 쿨다운 완료");
     }
 }

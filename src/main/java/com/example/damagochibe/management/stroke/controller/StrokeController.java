@@ -19,7 +19,7 @@ public class StrokeController {
     }
 
     @PostMapping("/strokeCool")
-    private void strokeCood() {
-        strokeService.strokeCool();
+    private void strokeCood(@RequestBody Mong mong) {
+        strokeService.strokeCool(mong);
     }
 }

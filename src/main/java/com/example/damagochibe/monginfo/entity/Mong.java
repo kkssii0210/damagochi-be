@@ -61,7 +61,5 @@ public class Mong {
     @Column(columnDefinition = "INT DEFAULT 0")
     private Integer exp; // 경험차
 
-
-
 }
 

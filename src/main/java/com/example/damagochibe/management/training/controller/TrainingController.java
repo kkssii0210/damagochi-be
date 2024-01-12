@@ -19,7 +19,7 @@ public class TrainingController {
     }
 
     @PostMapping("/trainingCool")
-    private void trainingCool() {
-        trainingService.trainingCool();
+    private void trainingCool(@RequestBody Mong mong) {
+        trainingService.trainingCool(mong);
     }
 }

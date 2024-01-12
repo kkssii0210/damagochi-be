@@ -1,5 +1,7 @@
 package com.example.damagochibe.management.training.service;
 
+import com.example.damagochibe.management.global.cooldown.entity.Cooldown;
+import com.example.damagochibe.management.global.cooldown.repository.CooldownRepository;
 import com.example.damagochibe.management.mong.repository.MongRepository;
 import com.example.damagochibe.management.mong.service.MongService1;
 import com.example.damagochibe.monginfo.entity.Mong;
@@ -13,11 +15,11 @@ public class TrainingService {
 
     private final MongRepository mongRepository;
     private final MongService1 mongService1;
-    private boolean trainingCooldown = false;
+    private final CooldownRepository cooldownRepository;
 
     public ResponseEntity training(Mong mong) {
-        if (!trainingCooldown) {
-            Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        if (!cooldownRepository.findByMongId(myMong.getId()).isTraining()) {
             if (myMong.getTired() != 0) {
                 myMong.setTired(Math.max(myMong.getTired() - 20, 0));
                 myMong.setExp(myMong.getExp() + 10);
@@ -38,14 +40,19 @@ public class TrainingService {
         }
     }
 
-    public void trainingCool() {
-        trainingCooldown = true;
+    public void trainingCool(Mong mong) {
+        Mong myMong  = mongRepository.findByMemberId(mong.getMemberId());
+        Long mongId = myMong.getId();
+        Cooldown cooldown = cooldownRepository.findByMongId(mongId);
+        cooldown.setTraining(true);
+        cooldownRepository.save(cooldown);
         try {
             Thread.sleep(10000);
-            trainingCooldown = false;
+            cooldown.setTraining(false);
+            cooldownRepository.save(cooldown);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("training 쿨다운 완료");
+        System.out.println("feed 쿨다운 완료");
     }
 }
