@@ -39,8 +39,7 @@ public class OauthService {
         Optional<Member> result = memberRepository.findByPlayerId(email);
         //기존 회원이면
         if (result.isPresent()){
-            SocialUserDto socialUserDto = entityToDTO(result.get());
-            return socialUserDto;
+            return entityToDTO(result.get());
         }
         //기존 회원이 아니면 자동등록
         Member socialMember = makeSocialMember(email);
@@ -54,20 +53,18 @@ public class OauthService {
         authRepository.save(
                 Auth.builder().memberId(String.valueOf(memberId)).role("USER")
                         .build());
-        SocialUserDto socialUserDto = entityToDTO(socialMember);
-        return socialUserDto;
+        return entityToDTO(socialMember);
     }
 
     public Member makeSocialMember(String email) {
         String tempPassword = makeTempPassword();
         log.info("tempPassword :" + tempPassword);
-        Member member = Member.builder()
+        return Member.builder()
                 .playerId(email)
                 .password(passwordEncoder.encode(tempPassword))
                 .point(0)
                 .isSocialMember(true)
                 .build();
-        return member;
     }
 
     public String getEmailFromKakaoAccessToken(String accessToken) {
@@ -102,8 +99,7 @@ public class OauthService {
         return buffer.toString();
     }
     private SocialUserDto entityToDTO(Member member){
-        SocialUserDto dto = new SocialUserDto(member.getPlayerId(), member.getPassword(), member.getPoint(), member.getIsSocialMember());
-        return dto;
+        return new SocialUserDto(member.getPlayerId(), member.getPassword(), member.getPoint(), member.getIsSocialMember());
     }
     public Member generateToken(SocialOauthToken socialOauthToken) {
         String email = getEmailFromKakaoAccessToken(socialOauthToken.getAccess_token());

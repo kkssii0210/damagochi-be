@@ -36,15 +36,10 @@ public class MemberService {
     }
 
     @Transactional
-    public FindMemberInfoResDto findMemberInfo(Long memberId) throws RuntimeException {
-        String playerId = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new NotFoundException());
-
+    public FindMemberInfoResDto findMemberInfo(Member member) throws RuntimeException {
+        Long memberId = member.getMemberId();
         ObjectMapper om = new ObjectMapper();
-
-        FindMongResVo findMongResVo = null;
+        FindMongResVo findMongResVo = new FindMongResVo();
 
         try {
             findMongResVo.setMongId(mongInfoService.findMongByMember(memberId));

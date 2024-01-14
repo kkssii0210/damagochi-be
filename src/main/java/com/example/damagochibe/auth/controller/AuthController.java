@@ -132,7 +132,6 @@ public class AuthController {
             System.out.println("isSocial = " + isSocial);
             return isSocial;
         }
-
         return false;
     }
 }

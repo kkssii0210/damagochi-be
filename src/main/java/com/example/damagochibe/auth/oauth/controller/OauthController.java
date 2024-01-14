@@ -4,8 +4,6 @@ import com.example.damagochibe.auth.oauth.dto.SocialOauthToken;
 import com.example.damagochibe.auth.oauth.service.OauthService;
 import com.example.damagochibe.code.ErrorStateCode;
 import com.example.damagochibe.exception.NotFoundException;
-import com.example.damagochibe.member.dto.response.LoginResDto;
-import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.response.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
