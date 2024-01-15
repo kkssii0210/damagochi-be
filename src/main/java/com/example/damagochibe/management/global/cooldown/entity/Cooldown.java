@@ -23,8 +23,8 @@ public class Cooldown {
     @Column
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "mong_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mong_id", nullable = false, unique = true)
     private Mong mong;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")

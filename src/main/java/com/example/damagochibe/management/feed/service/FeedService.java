@@ -35,12 +35,17 @@ public class FeedService {
         Long mongId = myMong.getId();
         Cooldown cooldown = cooldownRepository.findByMongId(mongId);
         cooldown.setFeed(true);
+        System.out.println("before update feeding..");
         cooldownRepository.save(cooldown);
+
+        System.out.println("feeding..");
+        System.out.println("System.identityHashCode(cooldown) = " + System.identityHashCode(cooldown));
         try {
             Thread.sleep(10000);
             cooldown.setFeed(false);
             cooldownRepository.save(cooldown);
         } catch (InterruptedException e) {
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
         System.out.println("feed 쿨다운 완료");
