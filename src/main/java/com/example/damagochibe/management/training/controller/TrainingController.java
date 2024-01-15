@@ -15,11 +15,15 @@ public class TrainingController {
 
     @PutMapping
     public ResponseEntity training(@RequestBody Mong mong) {
-        return trainingService.training(mong);
+        System.out.println("TrainingController.training");
+        ResponseEntity training = trainingService.training(mong);
+        System.out.println("training = " + training);
+        return training;
     }
 
     @PostMapping("/trainingCool")
     private void trainingCool(@RequestBody Mong mong) {
+        System.out.println("TrainingController.trainingCool");
         trainingService.trainingCool(mong);
     }
 }

@@ -35,14 +35,20 @@ public class StrokeService {
         Long mongId = myMong.getId();
         Cooldown cooldown = cooldownRepository.findByMongId(mongId);
         cooldown.setStroke(true);
+        System.out.println("before update stroking..");
+
         cooldownRepository.save(cooldown);
+
+        System.out.println("stroking..");
+        System.out.println("System.identityHashCode(cooldown) = " + System.identityHashCode(cooldown));
         try {
             Thread.sleep(10000);
             cooldown.setStroke(false);
             cooldownRepository.save(cooldown);
         } catch (InterruptedException e) {
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
-        System.out.println("feed 쿨다운 완료");
+        System.out.println("stroke 쿨다운 완료");
     }
 }
