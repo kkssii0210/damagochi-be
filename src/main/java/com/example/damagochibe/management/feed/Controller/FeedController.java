@@ -21,6 +21,6 @@ public class FeedController {
     @PostMapping("/feedCool")
     public void feedCool(@RequestBody Mong mong) {
         feedService.feedCool(mong);
-        feedService.feedDirty(mong);
+//        feedService.feedDirty(mong);
     }
 }

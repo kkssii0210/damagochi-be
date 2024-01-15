@@ -6,7 +6,10 @@ import com.example.damagochibe.management.mong.repository.MongRepository;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class StrokeService {
         }
     }
 
+    @Async
     public void strokeCool(Mong mong) {
         Mong myMong  = mongRepository.findByMemberId(mong.getMemberId());
         Long mongId = myMong.getId();
@@ -43,12 +47,20 @@ public class StrokeService {
         System.out.println("System.identityHashCode(cooldown) = " + System.identityHashCode(cooldown));
         try {
             Thread.sleep(10000);
-            cooldown.setStroke(false);
-            cooldownRepository.save(cooldown);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
+        } finally {
         }
+
+        strokeEnd(mongId);
         System.out.println("stroke 쿨다운 완료");
+    }
+
+    public void strokeEnd(Long mongId) {
+        Cooldown cooldown = cooldownRepository.findByMongId(mongId);
+        cooldown.setStroke(false);
+        cooldownRepository.save(cooldown);
     }
 }
