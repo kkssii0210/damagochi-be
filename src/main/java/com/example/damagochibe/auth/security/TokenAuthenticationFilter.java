@@ -34,15 +34,14 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     private final TokenProvider tokenProvider;
     private final CustomUserDetailService customUserDetailService;
 
-
-
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         log.info("dofilter-call");
         String accessToken = getToken((HttpServletRequest) request);
         log.info("accessToken :" + accessToken);
+        String requestURI = ((HttpServletRequest) request).getRequestURI();
         if (accessToken != null) {
+            if (!requestURI.equals("/auth/logout") && !requestURI.equals("auth/isSocialMember")){
             //소셜회원인지 먼저 검증
             if (!tokenProvider.isSocialMember(accessToken)) {
                 try {
@@ -68,6 +67,9 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails((HttpServletRequest) request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }
+        }else{// 리프레쉬 토큰인 경우
+                logger.info("JWT token 리프레쉬 or 로그아웃");
             }
         }
         chain.doFilter(request, response);

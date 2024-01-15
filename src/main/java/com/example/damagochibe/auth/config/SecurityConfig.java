@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,12 +40,12 @@ public class SecurityConfig {
                         .authenticationEntryPoint(tokenEntryPoint)
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/auth/login","/auth/isSocialMember").permitAll()
+                        .requestMatchers("/auth/login","/auth/isSocialMember","/auth/logout").permitAll()
                         .requestMatchers("/auth/accessToken").authenticated()
                         .requestMatchers("/auth/**").hasAnyAuthority("USER")
                         .anyRequest().permitAll()
                 )
-
+                .logout((LogoutConfigurer::permitAll))
                 .sessionManagement(sessionManagement->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );

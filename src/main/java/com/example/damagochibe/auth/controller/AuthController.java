@@ -58,10 +58,10 @@ public class AuthController {
     }
     @GetMapping("/logout")
     public ResponseEntity logout(@RequestHeader("Authorization")String refreshToken){
+        log.info("logout - call");
         if(StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer ")){
             refreshToken = refreshToken.substring(7);
         }
-
         if(refreshToken != null){
             String id = tokenProvider.deleteRefreshToken(refreshToken);
             return ResponseEntity.ok().build();
