@@ -1,10 +1,18 @@
 package com.example.damagochibe.monginfo.controller;
 
+import com.example.damagochibe.auth.dto.request.MemberAuthDto;
+import com.example.damagochibe.auth.security.CustomUserDetailService;
+import com.example.damagochibe.auth.security.TokenProvider;
+import com.example.damagochibe.member.entity.Member;
+import com.example.damagochibe.member.service.MemberService;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.service.MongInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +22,9 @@ import java.util.List;
 @RequestMapping("/api/monginfo")
 public class MongInfoController {
     private final MongInfoService mongInfoService;
+    private final TokenProvider tokenProvider;
+    private final CustomUserDetailService customUserDetailService;
+    private final MemberService memberService;
 
     @GetMapping
     public ResponseEntity<List<Mong>>getAllMongs(){
@@ -21,14 +32,29 @@ public class MongInfoController {
         return ResponseEntity.ok(mongs);
     }
     //Mong 조회
-    @GetMapping("{id}")
-    public ResponseEntity<Mong> getMongById(@PathVariable Long id){
-        Mong mong = mongInfoService.getMongById(id);
-        //mong 존재 여부
-        if (mong == null){
+    //TODO: 추후 리팩토링 필요함.
+    @GetMapping("jeon")
+    public ResponseEntity<Mong> getMongById(@RequestHeader("Authorization")String accessToken){
+        if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
+            accessToken = accessToken.substring(7);
+        }
+        if(tokenProvider.validateToken(accessToken, customUserDetailService.loadUserByUsername(tokenProvider.getUsername(accessToken)))){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            MemberAuthDto dto = new MemberAuthDto(authentication.getName(),authentication.getAuthorities().stream().toList().get(0).toString());
+            String playerId = dto.getPlayerId();
+            Member byMemberPlayerId = memberService.findByMemberPlayerId(playerId);
+            Long memberId = byMemberPlayerId.getMemberId();
+            Mong mong = mongInfoService.findMongByMemberId(memberId);
+            if (mong == null){
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(mong);
+        }else {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(mong);
+//멤버 아이디로 mong가져오는 로직필요,
+        //mong 존재 여부
     }
     //새로운 Mong 생성 create
     @PostMapping
