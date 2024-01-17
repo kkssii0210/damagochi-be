@@ -7,6 +7,7 @@ import com.example.damagochibe.management.mong.service.MongService1;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,6 +53,7 @@ public class TrainingService {
         }
     }
 
+    @Async
     public void trainingCool(Mong mong) {
         System.out.println("before update training..1");
 
@@ -73,12 +75,18 @@ public class TrainingService {
         System.out.println("System.identityHashCode(cooldown) = " + System.identityHashCode(cooldown));
         try {
             Thread.sleep(10000);
-            cooldown.setTraining(false);
-            cooldownRepository.save(cooldown);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
         }
+        trainingEnd(mongId);
         System.out.println("train 쿨다운 완료");
+    }
+
+    public void trainingEnd(Long mongId) {
+        Cooldown cooldown = cooldownRepository.findByMongId(mongId);
+        cooldown.setTraining(false);
+        cooldownRepository.save(cooldown);
     }
 }
