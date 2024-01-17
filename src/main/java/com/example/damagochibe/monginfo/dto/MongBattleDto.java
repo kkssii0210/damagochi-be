@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,5 +14,3 @@ public class MongBattleDto {
     private Integer win;   //우승 횟수
     private Integer lose;  //진 횟수
 }
-
-

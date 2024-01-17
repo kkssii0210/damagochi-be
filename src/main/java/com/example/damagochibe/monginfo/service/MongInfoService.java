@@ -48,9 +48,11 @@ public class MongInfoService {
 
 
     public MongBattleDto getMongBattleInfo(Long id) {
-        return new MongBattleDto.findAll();
+        return new MongBattleDto.findById(id).orElse(null);
     }
 
-    public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto) {
+
+    public MongBattleDto createMongBattleInfo(Long id, MongBattleDto mongBattleDto) {
+        return null;
     }
 }

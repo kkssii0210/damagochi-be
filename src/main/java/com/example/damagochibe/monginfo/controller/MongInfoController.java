@@ -90,16 +90,34 @@ public ResponseEntity<Void> deleteMong(@PathVariable Long id){
         }
         return ResponseEntity.ok(battleInfo);
     }
-    {/*    @PostMapping("/battle/{id}")
+    @PostMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> createMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
         MongBattleDto createdBattleInfo = mongInfoService.createMongBattleInfo(id, mongBattleDto);
         return ResponseEntity.ok(createdBattleInfo);
     }
-    */}
-// Mong의 전투 정보 수정 :
-    @PutMapping("/battle/{id}")
+    @PutMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
         MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
+
+        if (mongBattleDto.getMongId() > mongBattleDto.getOpponentMongId()) { // 승리한 경우
+            updatedBattleInfo.setWin(updatedBattleInfo.getWin() + 1);
+        } else { // 패배한 경우
+            updatedBattleInfo.setLose(updatedBattleInfo.getLose() + 1);
+        }
+
+        return ResponseEntity.ok(updatedBattleInfo);
+    }
+
+    @PutMapping("/battleInfo/{id}")
+    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
+        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
+
+        if (mongBattleDto.getWin() > mongBattleDto.getLose()) {  // 승패 판단 수정
+            updatedBattleInfo.setWin(updatedBattleInfo.getWin() + 1);
+        } else {
+            updatedBattleInfo.setLose(updatedBattleInfo.getLose() + 1);
+        }
+
         return ResponseEntity.ok(updatedBattleInfo);
     }
 }
