@@ -1,6 +1,6 @@
-package com.example.damagochibe.management.sleep.controller;
+package com.example.damagochibe.management.clean.cleanController;
 
-import com.example.damagochibe.management.sleep.service.SleepService;
+import com.example.damagochibe.management.clean.cleanService.CleanService;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/manage/sleep")
-public class SleepController {
+@RequestMapping("/api/manage/clean")
+public class CleanController {
 
-    private final SleepService sleepService;
+    private final CleanService cleanService;
 
     @PutMapping
-    public ResponseEntity sleep(@RequestBody Mong mong) {
-        return sleepService.sleep(mong);
+    public ResponseEntity clean(@RequestBody Mong mong) {
+        return cleanService.clean(mong);
     }
-
 }

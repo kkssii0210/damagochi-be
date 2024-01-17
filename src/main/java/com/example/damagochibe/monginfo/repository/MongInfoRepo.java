@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MongInfoRepo extends JpaRepository<Mong, Long> {
+    @Query("SELECT m FROM Mong m WHERE m.memberId = :memberId")
+    Mong findMongByMemberId(Long memberId);
     @Query("SELECT m.id FROM Mong m WHERE m.memberId = :memberId")
     Long findMongByMember(Long memberId);
 }

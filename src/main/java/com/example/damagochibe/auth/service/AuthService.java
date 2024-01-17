@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -74,16 +75,18 @@ public class AuthService {
         String accessToken = tokenProvider.generateAccessToken(loginReqDto.getPlayerId());
         String refreshToken = tokenProvider.generateRefreshToken(loginReqDto.getPlayerId());
 
-        // 캐시 서버에 token 저장
+        //서버에 token 저장
         try {
             refreshTokenRepository.save(RefreshToken.builder()
                     .id(loginReqDto.getPlayerId())
-                    .memberId(String.valueOf(memberLoginResDto.getMemberId()))
+                    .memberId(memberLoginResDto.getMemberId())
                     .refreshToken(refreshToken)
                     .accessToken(accessToken)
-                    .expiration(JwtStateCode.REFRESH_TOKEN_EXPIRATION_PERIOD.getValue()).build());
+                    .expiration(new Date(System.currentTimeMillis()+JwtStateCode.ACCESS_TOKEN_EXPIRATION_PERIOD.getValue()))
+                    .refreshTokenExpiresIn(new Date(System.currentTimeMillis()+JwtStateCode.REFRESH_TOKEN_EXPIRATION_PERIOD.getValue()))
+                    .build());
         } catch (Exception e) {
-            //redis 에러 처리
+            // 에러 처리
             log.info(e.getMessage());
             throw new TimeoutException();
         }
@@ -106,7 +109,7 @@ public class AuthService {
         // 캐시 서버에서 토큰을 찾을 수 없을 때 ( refreshToken 만료 )
         // 사용자가 로그인을 다시 해야함
         RefreshToken refreshToken = refreshTokenRepository.findById(userName)
-                .orElseThrow(() -> new ForbiddenException());
+                .orElseThrow(ForbiddenException::new);
 
         // 리프레쉬 토큰 불일치
         if(!refreshToken.getRefreshToken().equals(token))throw new TokenUnauthException();
@@ -118,14 +121,14 @@ public class AuthService {
                         .memberId(refreshToken.getMemberId())
                         .refreshToken(refreshToken.getRefreshToken())
                         .accessToken(newAccessToken)
-                        .expiration(JwtStateCode.REFRESH_TOKEN_EXPIRATION_PERIOD.getValue())
+                        .expiration(new Date(System.currentTimeMillis()+JwtStateCode.REFRESH_TOKEN_EXPIRATION_PERIOD.getValue()))
                         .build();
 
-        // 캐시 서버에 token 저장
+        // 서버에 token 저장
         try {
             refreshTokenRepository.save(newRefreshToken);
         } catch (Exception e) {
-            //redis 에러 처리
+            //에러 처리
             log.info(e.getMessage());
             throw new TimeoutException();
         }
