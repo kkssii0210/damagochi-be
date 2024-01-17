@@ -1,5 +1,6 @@
 package com.example.damagochibe.monginfo.service;
 
+import com.example.damagochibe.monginfo.dto.MongBattleDto;
 import com.example.damagochibe.monginfo.dto.MongInfoDto;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.repository.MongInfoRepo;
@@ -46,4 +47,10 @@ public class MongInfoService {
     }
 
 
+    public MongBattleDto getMongBattleInfo(Long id) {
+        return new MongBattleDto.findAll();
+    }
+
+    public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto) {
+    }
 }

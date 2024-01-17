@@ -1,10 +1,12 @@
 package com.example.damagochibe.monginfo.controller;
 
+
 import com.example.damagochibe.auth.dto.request.MemberAuthDto;
 import com.example.damagochibe.auth.security.CustomUserDetailService;
 import com.example.damagochibe.auth.security.TokenProvider;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.service.MemberService;
+import com.example.damagochibe.monginfo.dto.MongBattleDto;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.service.MongInfoService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class MongInfoController {
     }
     //Mong 조회
     //TODO: 추후 리팩토링 필요함.
-    @GetMapping("jeon")
+    @GetMapping("id")
     public ResponseEntity<Mong> getMongById(@RequestHeader("Authorization")String accessToken){
         if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
             accessToken = accessToken.substring(7);
@@ -79,24 +81,25 @@ public ResponseEntity<Void> deleteMong(@PathVariable Long id){
         mongInfoService.deleteMong(id);
         return ResponseEntity.notFound().build();
     }
-// BATTLE COMTROLLER CRUD
-//    @GetMapping("/battleInfo/{id}")
-//    public ResponseEntity<MongBattleDto> getMongBattleInfo(@PathVariable Long id){
-//        MongBattleDto battleInfo = mongInfoService.getMongBattleInfo(id);
-//        if(battleInfo == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(battleInfo);
-//    }
-//    @PostMapping("/battle/{id}")
-//    public ResponseEntity<MongBattleDto> createMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto createdBattleInfo = mongInfoService.createMongBattleInfo(id, mongBattleDto);
-//        return ResponseEntity.ok(createdBattleInfo);
-//    }
-//// Mong의 전투 정보 수정
-//    @PutMapping("/battle/{id}")
-//    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-//        return ResponseEntity.ok(updatedBattleInfo);
-//    }
+// BATTLE COTROLLEnR CRUD
+    @GetMapping("/battleInfo/{id}")
+    public ResponseEntity<MongBattleDto> getMongBattleInfo(@PathVariable Long id){
+        MongBattleDto battleInfo = mongInfoService.getMongBattleInfo(id);
+        if(battleInfo == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(battleInfo);
+    }
+    {/*    @PostMapping("/battle/{id}")
+    public ResponseEntity<MongBattleDto> createMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
+        MongBattleDto createdBattleInfo = mongInfoService.createMongBattleInfo(id, mongBattleDto);
+        return ResponseEntity.ok(createdBattleInfo);
+    }
+    */}
+// Mong의 전투 정보 수정 :
+    @PutMapping("/battle/{id}")
+    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
+        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
+        return ResponseEntity.ok(updatedBattleInfo);
+    }
 }

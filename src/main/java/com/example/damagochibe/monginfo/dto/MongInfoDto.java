@@ -19,5 +19,4 @@ public class MongInfoDto {
     private String attribute;
     private Integer evolutionLevel;
     private Integer level;
-// TODO 몽의 정보. 컨펌 ..아니고 알아서하기 .... age랑 memberId 있어야 하는가
 }
