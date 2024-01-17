@@ -27,4 +27,10 @@ public class MongController {
     public ResponseEntity levelUp(@RequestBody Mong mong) {
         return mongService1.levelUp(mong.getMemberId());
     }
+
+    @PutMapping("/evo")
+    public ResponseEntity evo(@RequestBody Mong mong) {
+        System.out.println("mong = " + mong);
+        return mongService1.evo(mong);
+    }
 }
