@@ -1,16 +1,15 @@
-package com.example.damagochibe.Store.service;
+package com.example.damagochibe.store.service;
 
-import com.example.damagochibe.Item.food.dto.FoodDto;
 import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.food.repository.FoodRepository;
-import com.example.damagochibe.Item.liquidMedicine.LiquidMedicineDto.LiquidMedicineDto;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.liquidMedicine.repository.LiquidMedicineRepository;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
-import com.example.damagochibe.Store.dto.StoreDto;
-import com.example.damagochibe.Store.entity.Store;
-import com.example.damagochibe.Store.repository.StoreRepository;
+import com.example.damagochibe.store.dto.DeleteReqDto;
+import com.example.damagochibe.store.dto.StoreDto;
+import com.example.damagochibe.store.entity.Store;
+import com.example.damagochibe.store.repository.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +54,10 @@ public class StoreService {
         List<Store> storeFoodList = foodList.getContent().stream()
                 .map(food -> Store.builder()
                         .storeId(food.getFoodId())
-                        .itemCategory(food.getFoodCategory())
+                        .itemCategory(food.getCategory())
                         .itemName(food.getFoodName())
                         .itemFunction(food.getFoodFunction())
-                        .itemCategory(food.getFoodCategory())
+                        .itemCategory(food.getCategory())
                         .itemPrice(food.getFoodPrice())
                         .build())
                 .collect(Collectors.toList());
@@ -76,7 +75,7 @@ public class StoreService {
                         .storeId(liquidMedicine.getLiquidMedicineId())
                         .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemFunction(liquidMedicine.getLiquidMedicineFunction())
-                        .itemCategory(liquidMedicine.getLiquidMedicineCategory())
+                        .itemCategory(liquidMedicine.getCategory())
                         .itemPrice(liquidMedicine.getLiquidMedicinePrice())
                         .build())
                 .collect(Collectors.toList());
@@ -93,7 +92,7 @@ public class StoreService {
                         .storeId(myMap.getMymapId())
                         .itemName(myMap.getMapName())
                         .itemFunction(myMap.getMapFunction())
-                        .itemCategory(myMap.getMapCategory())
+                        .itemCategory(myMap.getCategory())
                         .itemPrice(myMap.getMapPrice())
                         .build())
                 .collect(Collectors.toList());
@@ -111,7 +110,7 @@ public class StoreService {
             foods = Store.builder()
                     .storeId(foodView.get().getFoodId())
                     .itemName(foodView.get().getFoodName())
-                    .itemCategory(foodView.get().getFoodCategory())
+                    .itemCategory(foodView.get().getCategory())
                     .itemFunction(foodView.get().getFoodFunction())
                     .itemPrice(foodView.get().getFoodPrice()).build();
         }
@@ -128,7 +127,7 @@ public class StoreService {
             liquidMedicines = Store.builder()
                     .storeId(liquidMedicineView.get().getLiquidMedicineId())
                     .itemName(liquidMedicineView.get().getLiquidMedicineName())
-                    .itemCategory(liquidMedicineView.get().getLiquidMedicineCategory())
+                    .itemCategory(liquidMedicineView.get().getCategory())
                     .itemFunction(liquidMedicineView.get().getLiquidMedicineFunction())
                     .itemPrice(liquidMedicineView.get().getLiquidMedicinePrice()).build();
         }
@@ -145,7 +144,7 @@ public class StoreService {
             maps = Store.builder()
                     .storeId(mapView.get().getMymapId())
                     .itemName(mapView.get().getMapName())
-                    .itemCategory(mapView.get().getMapCategory())
+                    .itemCategory(mapView.get().getCategory())
                     .itemFunction(mapView.get().getMapFunction())
                     .itemPrice(mapView.get().getMapPrice()).build();
         }
@@ -155,25 +154,30 @@ public class StoreService {
 
 
     // 아이템 삭제
-    public void deleteByStoreId(Long storeId) {
-        Optional<Food> food = foodRepository.findById(storeId);
-        Optional<LiquidMedicine> liquidMedicine = liquidMedicineRepository.findById(storeId);
-        Optional<Mymap> map = mymapRepository.findById(storeId);
+    public void deleteByStoreId(DeleteReqDto deleteReqDto) {
+        System.out.println("deleteReqDto = " + deleteReqDto);
+        String category = deleteReqDto.getCategory();
+        System.out.println("category = " + category);
+        // storeId와 category를 가지고 삭제
 
-        Store store = new Store();
-        if (food.isPresent()) {
-            store.setStoreId(food.get().getFoodId());
-            foodRepository.deleteById(storeId);
+        if (category.equals("food")) {
 
+            Long foodId = foodRepository.findFoodIdByStoreId(deleteReqDto.getStoreId());
+            System.out.println("foodId = " + foodId);
+            foodRepository.deleteById(foodId);
         }
-        if (liquidMedicine.isPresent()) {
-            store.setStoreId(liquidMedicine.get().getLiquidMedicineId());
-            liquidMedicineRepository.deleteById(storeId);
+
+        if (category.equals("liquidMedicine")) {
+            Long medicineId = liquidMedicineRepository.findMedicineIdByStoreId(deleteReqDto.getStoreId());
+            liquidMedicineRepository.deleteById(medicineId);
         }
-        if (map.isPresent()) {
-            store.setStoreId(map.get().getMymapId());
-            mymapRepository.deleteById(storeId);
+
+        if(category.equals("map")) {
+            Long mapId = mymapRepository.findMapIdByStoreId(deleteReqDto.getStoreId());
+            mymapRepository.deleteById(mapId);
         }
+
+
     }
 
     // 아이템 수정
@@ -186,7 +190,7 @@ public class StoreService {
         if (foodContent.isPresent()) {
             Food food = foodContent.get();
             food.setFoodName(storeDto.getItemName());
-            food.setFoodCategory(storeDto.getItemCategory());
+            food.setCategory(storeDto.getItemCategory());
             food.setFoodFunction(storeDto.getItemFunction());
             food.setFoodPrice(storeDto.getItemPrice());
 
@@ -195,7 +199,7 @@ public class StoreService {
         } else if (liquidMedicineContent.isPresent()) {
             LiquidMedicine medicine = liquidMedicineContent.get();
             medicine.setLiquidMedicineName(storeDto.getItemName());
-            medicine.setLiquidMedicineCategory(storeDto.getItemCategory());
+            medicine.setCategory(storeDto.getItemCategory());
             medicine.setLiquidMedicineFunction(storeDto.getItemFunction());
             medicine.setLiquidMedicinePrice(storeDto.getItemPrice());
 
@@ -204,7 +208,7 @@ public class StoreService {
         } else if (mapContent.isPresent()) {
             Mymap map = mapContent.get();
             map.setMapName(storeDto.getItemName());
-            map.setMapCategory(storeDto.getItemCategory());
+            map.setCategory(storeDto.getItemCategory());
             map.setMapFunction(storeDto.getItemFunction());
             map.setMapPrice(storeDto.getItemPrice());
 

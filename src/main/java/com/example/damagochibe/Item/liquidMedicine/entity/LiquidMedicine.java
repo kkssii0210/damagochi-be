@@ -21,7 +21,7 @@ public class LiquidMedicine {
 
     private Long storeId;
     private String liquidMedicineName;
-    private String liquidMedicineCategory;
+    private String category;
     private String liquidMedicineFunction;
     private Integer liquidMedicinePrice;
     private String liquidMedicineCode;

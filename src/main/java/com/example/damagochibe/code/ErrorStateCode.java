@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorStateCode implements BasicCode {
+    NULL_POINT("400", "필수값을 입력해야 합니다"),
     UNAUTHORIZED("401", "권한이 없습니다"),
     ACCESS_TOKEN_EXPIRE("403", "ACCESS 토큰 만료"),
     REFRESH_TOKEN_EXPIRE("404", "REFRESH 토큰 만료"),

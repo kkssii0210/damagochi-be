@@ -29,9 +29,10 @@ public class Mymap {
     private LocalDateTime updDt;
 
     //상점에서 맵 판매를 위해 생성한 필드들
-    private Long stordId;
+    @Column(name = "store_id")
+    private Long storeId;
     private String mapName;
-    private String mapCategory;
+    private String category;
     private String mapFunction;
     private Integer mapPrice;
 }

@@ -1,4 +1,4 @@
-package com.example.damagochibe.Store.entity;
+package com.example.damagochibe.purchase.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,14 +10,12 @@ import lombok.*;
 @Builder
 @Entity
 @Table(schema = "damagochi")
-public class Store {
+public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeId;
-    private String itemCategory;
-    private String itemName;
-    private String itemFunction;
-    private Integer itemPrice;
+    private Long purchaseId;
 
     private Long memberId;
+    private Long paymentId;
+    private Integer itemPrice;
 }

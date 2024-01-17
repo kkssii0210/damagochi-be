@@ -1,27 +1,26 @@
-package com.example.damagochibe.Store.controller;
+package com.example.damagochibe.store.controller;
 
 import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
-import com.example.damagochibe.Store.dto.StoreDto;
-import com.example.damagochibe.Store.entity.Store;
-import com.example.damagochibe.Store.service.StoreService;
-import com.sun.jdi.LongValue;
+import com.example.damagochibe.store.dto.DeleteReqDto;
+import com.example.damagochibe.store.dto.StoreDto;
+import com.example.damagochibe.store.entity.Store;
+import com.example.damagochibe.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/store")
@@ -30,31 +29,38 @@ public class StoreController {
     private final StoreService storeService;
 
     @PostMapping("/item/register")
-    public void register(@RequestBody StoreDto storeDto) {
+    public ResponseEntity<Object> register(@Validated @RequestBody StoreDto storeDto) {
         System.out.println("storeDto = " + storeDto);
 
-        if (storeDto.getItemCategory().equals("food")) {
-            Food food = storeService.foodRegister(convertToFood(storeDto));
-        } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
-            storeService.liquidMedicineRegister(convertToMedicine(storeDto));
-        } else if (storeDto.getItemCategory().equals("map")) {
-            storeService.mapRegister(convertToMap(storeDto));
-        }
+            Store store = new Store();
+            if (storeDto.getItemCategory().equals("food")) {
+                Food food = storeService.foodRegister(convertToFood(storeDto));
+            } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
+                LiquidMedicine medicine = storeService.liquidMedicineRegister(convertToMedicine(storeDto));
+            } else if (storeDto.getItemCategory().equals("map")) {
+                Mymap map = storeService.mapRegister(convertToMap(storeDto));
+            }
+            return ResponseEntity.ok().body(store);
     }
 
     // storeDto를 Food, medicine, map Entity로 바꿔주는 메소드
     private Food convertToFood(StoreDto storeDto) {
         Food food = Food.builder()
+//                .storeId(storeDto.getStoreId())
                 .foodName(storeDto.getItemName())
+                .category(storeDto.getItemCategory())
                 .foodFunction(storeDto.getItemFunction())
                 .foodPrice(storeDto.getItemPrice()).build();
-
+        System.out.println("food.getStoreId()=" + food.getStoreId());
         return food;
+
     }
 
     private LiquidMedicine convertToMedicine(StoreDto storeDto) {
         LiquidMedicine liquidMedicine = LiquidMedicine.builder()
+//                .storeId(storeDto.getStoreId())
                 .liquidMedicineName(storeDto.getItemName())
+                .category(storeDto.getItemCategory())
                 .liquidMedicineFunction(storeDto.getItemFunction())
                 .liquidMedicinePrice(storeDto.getItemPrice()).build();
 
@@ -63,7 +69,9 @@ public class StoreController {
 
     private Mymap convertToMap(StoreDto storeDto) {
         Mymap map = Mymap.builder()
+//                .storeId(storeDto.getStoreId())
                 .mapName(storeDto.getItemName())
+                .category(storeDto.getItemCategory())
                 .mapFunction(storeDto.getItemFunction())
                 .mapPrice(storeDto.getItemPrice()).build();
 
@@ -122,9 +130,10 @@ public class StoreController {
     }
 
     // 아이템 삭제하기
-    @DeleteMapping("/item/delete/{storeId}")
-    public void deleteItem(@PathVariable Long storeId) {
-        storeService.deleteByStoreId(storeId);
+    @DeleteMapping("/item/delete")
+    public void deleteItem(@RequestBody DeleteReqDto deleteReqDto) {
+        System.out.println("deleteReqDto = " + deleteReqDto.getStoreId() + deleteReqDto.getCategory());
+        storeService.deleteByStoreId(deleteReqDto);
     }
 
     // 편집을 위한 아이템 값 가져오기. 기존 메소드 이용

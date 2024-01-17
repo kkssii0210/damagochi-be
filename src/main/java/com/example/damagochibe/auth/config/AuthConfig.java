@@ -26,3 +26,4 @@ public class AuthConfig {
         return byMemberId.orElse(null);
     }
 }
+

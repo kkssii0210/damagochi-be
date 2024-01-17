@@ -21,12 +21,12 @@ public class Food {
     private Long foodId;
 
     private String foodName;
-    private String foodCategory;
+    private String category;
     private String foodFunction;
     private Integer foodPrice;
     private String foodCode;
 
-    private Long storedId;
+    private Long storeId;
     private Long memberId;
 
 }
