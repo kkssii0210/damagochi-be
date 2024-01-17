@@ -13,6 +13,7 @@
     @EnableWebSocketMessageBroker
     public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+
         @Override
         public void configureMessageBroker(MessageBrokerRegistry registry) {
             registry.enableSimpleBroker("/topic", "/queue"); // topic 모든 클라이언트, queue 특정 클라이언트
@@ -23,6 +24,7 @@
         public void registerStompEndpoints(StompEndpointRegistry registry) {
                 registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000")
                     .withSockJS();
+                registry.addEndpoint("/battle").setAllowedOrigins("http://localhost:5000").withSockJS();
         }
 
     }
