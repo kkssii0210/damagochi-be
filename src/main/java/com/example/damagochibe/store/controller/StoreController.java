@@ -46,7 +46,7 @@ public class StoreController {
     // storeDto를 Food, medicine, map Entity로 바꿔주는 메소드
     private Food convertToFood(StoreDto storeDto) {
         Food food = Food.builder()
-//                .storeId(storeDto.getStoreId())
+                .storeId(storeDto.getStoreId())
                 .foodName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .foodFunction(storeDto.getItemFunction())
@@ -58,7 +58,7 @@ public class StoreController {
 
     private LiquidMedicine convertToMedicine(StoreDto storeDto) {
         LiquidMedicine liquidMedicine = LiquidMedicine.builder()
-//                .storeId(storeDto.getStoreId())
+                .storeId(storeDto.getStoreId())
                 .liquidMedicineName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .liquidMedicineFunction(storeDto.getItemFunction())
@@ -69,7 +69,7 @@ public class StoreController {
 
     private Mymap convertToMap(StoreDto storeDto) {
         Mymap map = Mymap.builder()
-//                .storeId(storeDto.getStoreId())
+                .storeId(storeDto.getStoreId())
                 .mapName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .mapFunction(storeDto.getItemFunction())
@@ -94,36 +94,36 @@ public class StoreController {
     }
 
     @GetMapping("/item/view/id/{storeId}")
-    public Store itemViewById(@PathVariable("storeId") Long storeId, Pageable pageable) {
+    public StoreDto itemViewById(@PathVariable("storeId") Long storeId, Pageable pageable) {
 
-        Store food = storeService.foodViewById(storeId);
-        Store liquidMedicine = storeService.liquidMedicineViewById(storeId);
-        Store map = storeService.mapViewById(storeId);
+        Food food = storeService.foodViewById(storeId);
+        LiquidMedicine liquidMedicine = storeService.liquidMedicineViewById(storeId);
+        Mymap map = storeService.mapViewById(storeId);
 
         // List로 반환하지 않고 새 Store객체 만들어서 food, liquidMedicine, map 넣고 return함
-        Store combinedStore = new Store();
+        StoreDto combinedStore = new StoreDto();
         if (food != null) {
-            combinedStore.setStoreId(food.getStoreId());
-            combinedStore.setItemName(food.getItemName());
-            combinedStore.setItemCategory(food.getItemCategory());
-            combinedStore.setItemFunction(food.getItemFunction());
-            combinedStore.setItemPrice(food.getItemPrice());
+            combinedStore.setStoreId(food.getFoodId());
+            combinedStore.setItemName(food.getFoodName());
+            combinedStore.setItemCategory(food.getCategory());
+            combinedStore.setItemFunction(food.getFoodFunction());
+            combinedStore.setItemPrice(food.getFoodPrice());
         }
 
         if (liquidMedicine != null) {
-            combinedStore.setStoreId(liquidMedicine.getStoreId());
-            combinedStore.setItemName(liquidMedicine.getItemName());
-            combinedStore.setItemCategory(liquidMedicine.getItemCategory());
-            combinedStore.setItemFunction(liquidMedicine.getItemFunction());
-            combinedStore.setItemPrice(liquidMedicine.getItemPrice());
+            combinedStore.setStoreId(liquidMedicine.getLiquidMedicineId());
+            combinedStore.setItemName(liquidMedicine.getLiquidMedicineName());
+            combinedStore.setItemCategory(liquidMedicine.getCategory());
+            combinedStore.setItemFunction(liquidMedicine.getLiquidMedicineFunction());
+            combinedStore.setItemPrice(liquidMedicine.getLiquidMedicinePrice());
         }
 
         if (map != null) {
-            combinedStore.setStoreId(map.getStoreId());
-            combinedStore.setItemName(map.getItemName());
-            combinedStore.setItemCategory(map.getItemCategory());
-            combinedStore.setItemFunction(map.getItemFunction());
-            combinedStore.setItemPrice(map.getItemPrice());
+            combinedStore.setStoreId(map.getMymapId());
+            combinedStore.setItemName(map.getMapName());
+            combinedStore.setItemCategory(map.getCategory());
+            combinedStore.setItemFunction(map.getMapFunction());
+            combinedStore.setItemPrice(map.getMapPrice());
         }
 
         return combinedStore;
@@ -138,7 +138,7 @@ public class StoreController {
 
     // 편집을 위한 아이템 값 가져오기. 기존 메소드 이용
     @GetMapping("/item/id/{storeId}")
-    public Store item(@PathVariable Long storeId, Pageable pageable) {
+    public StoreDto item(@PathVariable Long storeId, Pageable pageable) {
         return itemViewById(storeId, pageable);
     }
 

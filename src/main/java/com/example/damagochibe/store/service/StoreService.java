@@ -100,56 +100,32 @@ public class StoreService {
         return new PageImpl<>(storeMapList, pageable, mapList.getTotalElements());
     }
 
-    // 아이템 보기
-    public Store foodViewById(Long foodId) {
+    public Food foodViewById(Long foodId) {
+        // 아이템 보기
         Optional<Food> foodView = foodRepository.findById(foodId);
-        System.out.println("foodView = " + foodView);
 
-        Store foods = null;
         if (foodView.isPresent()) {
-            foods = Store.builder()
-                    .storeId(foodView.get().getFoodId())
-                    .itemName(foodView.get().getFoodName())
-                    .itemCategory(foodView.get().getCategory())
-                    .itemFunction(foodView.get().getFoodFunction())
-                    .itemPrice(foodView.get().getFoodPrice()).build();
+            return foodView.get();
         }
-
-        return foods;
+        return null;
     }
 
-    public Store liquidMedicineViewById(Long liquidMedicineId) {
+    public LiquidMedicine liquidMedicineViewById(Long liquidMedicineId) {
         Optional<LiquidMedicine> liquidMedicineView = liquidMedicineRepository.findById(liquidMedicineId);
-        System.out.println("liquidMedicineView = " + liquidMedicineView);
 
-        Store liquidMedicines = null;
         if (liquidMedicineView.isPresent()) {
-            liquidMedicines = Store.builder()
-                    .storeId(liquidMedicineView.get().getLiquidMedicineId())
-                    .itemName(liquidMedicineView.get().getLiquidMedicineName())
-                    .itemCategory(liquidMedicineView.get().getCategory())
-                    .itemFunction(liquidMedicineView.get().getLiquidMedicineFunction())
-                    .itemPrice(liquidMedicineView.get().getLiquidMedicinePrice()).build();
+            return liquidMedicineView.get();
         }
-
-        return liquidMedicines;
+        return null;
     }
 
-    public Store mapViewById(Long mapId) {
+    public Mymap mapViewById(Long mapId) {
         Optional<Mymap> mapView = mymapRepository.findById(mapId);
-        System.out.println("mapView = " + mapView);
 
-        Store maps = null;
         if (mapView.isPresent()) {
-            maps = Store.builder()
-                    .storeId(mapView.get().getMymapId())
-                    .itemName(mapView.get().getMapName())
-                    .itemCategory(mapView.get().getCategory())
-                    .itemFunction(mapView.get().getMapFunction())
-                    .itemPrice(mapView.get().getMapPrice()).build();
+            return mapView.get();
         }
-
-        return maps;
+        return null;
     }
 
 
@@ -161,23 +137,16 @@ public class StoreService {
         // storeId와 category를 가지고 삭제
 
         if (category.equals("food")) {
-
-            Long foodId = foodRepository.findFoodIdByStoreId(deleteReqDto.getStoreId());
-            System.out.println("foodId = " + foodId);
-            foodRepository.deleteById(foodId);
+            foodRepository.deleteById(deleteReqDto.getStoreId());
         }
 
         if (category.equals("liquidMedicine")) {
-            Long medicineId = liquidMedicineRepository.findMedicineIdByStoreId(deleteReqDto.getStoreId());
-            liquidMedicineRepository.deleteById(medicineId);
+            liquidMedicineRepository.deleteById(deleteReqDto.getStoreId());
         }
 
-        if(category.equals("map")) {
-            Long mapId = mymapRepository.findMapIdByStoreId(deleteReqDto.getStoreId());
-            mymapRepository.deleteById(mapId);
+        if (category.equals("map")) {
+            mymapRepository.deleteById(deleteReqDto.getStoreId());
         }
-
-
     }
 
     // 아이템 수정

@@ -7,6 +7,4 @@ import org.springframework.stereotype.Repository;
 
 public interface LiquidMedicineRepository extends JpaRepository<LiquidMedicine, Long> {
 
-    @Query("SELECT l.liquidMedicineId FROM LiquidMedicine l WHERE l.storeId = :storeId")
-    Long findMedicineIdByStoreId(Long storeId);
 }

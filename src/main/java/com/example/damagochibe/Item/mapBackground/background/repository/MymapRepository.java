@@ -9,6 +9,4 @@ import java.util.Optional;
 public interface MymapRepository extends JpaRepository<Mymap,Long> {
     Optional<Mymap> getByMemberId(Long memberId);
 
-    @Query("SELECT m.mymapId FROM Mymap m WHERE m.storeId = :storeId")
-    Long findMapIdByStoreId(Long storeId);
 }
