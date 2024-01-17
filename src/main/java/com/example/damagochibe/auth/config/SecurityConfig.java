@@ -1,11 +1,13 @@
 package com.example.damagochibe.auth.config;
 
+import com.example.damagochibe.auth.oauth.service.OauthService;
 import com.example.damagochibe.auth.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,7 @@ public class SecurityConfig {
     private final TokenEntryPoint tokenEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -37,12 +40,12 @@ public class SecurityConfig {
                         .authenticationEntryPoint(tokenEntryPoint)
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/auth/login","/auth/isSocialMember").permitAll()
+                        .requestMatchers("/auth/login","/auth/isSocialMember","/auth/logout").permitAll()
                         .requestMatchers("/auth/accessToken").authenticated()
                         .requestMatchers("/auth/**").hasAnyAuthority("USER")
                         .anyRequest().permitAll()
                 )
-
+                .logout((LogoutConfigurer::permitAll))
                 .sessionManagement(sessionManagement->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );

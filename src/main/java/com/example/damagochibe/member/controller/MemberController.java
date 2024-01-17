@@ -1,5 +1,6 @@
 package com.example.damagochibe.member.controller;
 
+import com.example.damagochibe.auth.config.AuthConfig;
 import com.example.damagochibe.auth.security.TokenProvider;
 import com.example.damagochibe.code.PaypointStateCode;
 import com.example.damagochibe.exception.NotFoundException;
@@ -9,6 +10,7 @@ import com.example.damagochibe.member.dto.request.SecureReqDto;
 import com.example.damagochibe.member.dto.response.FindMemberInfoResDto;
 import com.example.damagochibe.member.dto.response.LoginResDto;
 import com.example.damagochibe.member.dto.response.ModifyPointResDto;
+import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.service.MemberService;
 import com.example.damagochibe.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,20 +26,22 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
+    private final AuthConfig authConfig;
     @GetMapping("/info")
     public ResponseEntity<Object> findMemberInfo(HttpServletRequest httpServletRequest) {
         log.info("findMemberInfo - Call");
 //        Long memberId = Long.parseLong(httpServletRequest.getHeader(headerMember));
         try {
             // "Authorization" 헤더에서 토큰 추출
-            String authorizationHeader = httpServletRequest.getHeader("Authorization");
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                throw new RuntimeException("Incorrect or missing Authorization header");
-            }
-            String token = authorizationHeader.substring(7); // "Bearer " 제거
-            String username = tokenProvider.getUsername(token);
-            Long memberId = memberService.findMemberId(username);
-            FindMemberInfoResDto findMemberInfoResDto = memberService.findMemberInfo(memberId);
+//            String authorizationHeader = httpServletRequest.getHeader("Authorization");
+//            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+//                throw new RuntimeException("Incorrect or missing Authorization header");
+//            }
+//            String token = authorizationHeader.substring(7); // "Bearer " 제거
+//            String username = tokenProvider.getUsername(token);
+//            Long memberId = memberService.findMemberId(username);
+            Member member = authConfig.tokenValidationService(httpServletRequest);
+            FindMemberInfoResDto findMemberInfoResDto = memberService.findMemberInfo(member);
             return ResponseEntity.ok().body(findMemberInfoResDto);
         } catch (NotFoundException e) {
             log.error(PaypointStateCode.NOTEXIST.getMessage());

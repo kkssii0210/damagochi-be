@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken,String> {
     @Query("SELECT R.memberId FROM RefreshToken R WHERE R.refreshToken = :refreshToken")
     Long findMemberIdByToken(String refreshToken);
+    @Query("SELECT R.memberId FROM RefreshToken R WHERE R.accessToken = :accessToken")
+    Long findMemberIdByAccessToken(String accessToken);
     @Transactional
     @Modifying
     @Query("DELETE FROM RefreshToken R WHERE R.memberId = :memberId")
