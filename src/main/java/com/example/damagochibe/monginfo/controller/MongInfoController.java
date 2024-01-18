@@ -1,6 +1,5 @@
 package com.example.damagochibe.monginfo.controller;
 
-
 import com.example.damagochibe.auth.dto.request.MemberAuthDto;
 import com.example.damagochibe.auth.security.CustomUserDetailService;
 import com.example.damagochibe.auth.security.TokenProvider;
@@ -34,8 +33,6 @@ public class MongInfoController {
         return ResponseEntity.ok(mongs);
     }
 
-    //Mong 조회
-    //TODO: 추후 리팩토링 필요함.
     @GetMapping("id")
     public ResponseEntity<Mong> getMongById(@RequestHeader("Authorization") String accessToken) {
         if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")) {
@@ -56,11 +53,8 @@ public class MongInfoController {
         } else {
             return ResponseEntity.notFound().build();
         }
-//멤버 아이디로 mong가져오는 로직필요,
-        //mong 존재 여부
     }
 
-    //새로운 Mong 생성 create
     @PostMapping
     public ResponseEntity<Mong> addMong(@RequestBody Mong mong) {
         Mong addMong = mongInfoService.addMong(mong);
@@ -76,15 +70,12 @@ public class MongInfoController {
         return ResponseEntity.ok(updatedMong);
     }
 
-    //삭제 메소드 delete method
     @DeleteMapping("/{id}")
-//    public ResponseEntity<???>
     public ResponseEntity<Void> deleteMong(@PathVariable Long id) {
         mongInfoService.deleteMong(id);
         return ResponseEntity.notFound().build();
     }
 
-    // BATTLE COTROLLEnR CRUD
     @GetMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> getMongBattleInfo(@PathVariable Long id) {
         MongBattleDto battleInfo = mongInfoService.getMongBattleInfo(id);
@@ -93,42 +84,16 @@ public class MongInfoController {
         }
         return ResponseEntity.ok(battleInfo);
     }
-//    @PostMapping("/battleInfo/")
-//    public ResponseEntity<MongBattleDto> createMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto createdBattleInfo = mongInfoService.createMongBattleInfo(id, mongBattleDto);
-//        return ResponseEntity.ok(createdBattleInfo);
-//    }
-//    @PutMapping("/battleInfo/{id}")
-//    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-//
-//        if (mongBattleDto.getMongId() > mongBattleDto.getOpponentMongId()) { // 승리한 경우
-//            updatedBattleInfo.setWin(updatedBattleInfo.getWin() + 1);
-//        } else { // 패배한 경우
-//            updatedBattleInfo.setLose(updatedBattleInfo.getLose() + 1);
-//        }
-//
-//        return ResponseEntity.ok(updatedBattleInfo);
-//    }
-//    @PutMapping("/battleInfo/{id}")
-//    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-//
-//        if (mongBattleDto.getWin() > mongBattleDto.getLose()) {  // 승패 판단 수정 ===
-//            updatedBattleInfo.setWin(updatedBattleInfo.getWin() + 1);
-//        } else {
-//            updatedBattleInfo.setLose(updatedBattleInfo.getLose() + 1);
-//        }
-//
-//        return ResponseEntity.ok(updatedBattleInfo);
-//    }
-//}
 
     @PutMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
         MongBattleDto updateBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-        updateBattleInfo.setWin(mongBattleDto.getWin());
-        updateBattleInfo.setLose(mongBattleDto.getLose());
+//        updateBattleInfo.setWin(mongBattleDto.getWin());
+//        updateBattleInfo.setLose(mongBattleDto.getLose());
+//        return ResponseEntity.ok(updateBattleInfo);
+        if (updateBattleInfo == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(updateBattleInfo);
     }
 }

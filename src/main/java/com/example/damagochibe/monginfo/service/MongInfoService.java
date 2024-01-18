@@ -43,7 +43,6 @@ public class MongInfoService {
         return mongInfoRepo.save(mong);
     }
 
-    //멤버아이디로 몽을 가져오는 메소드 필요
     public Mong findMongByMemberId(Long memberId) {
         return mongInfoRepo.findMongByMemberId(memberId);
     }
@@ -51,10 +50,20 @@ public class MongInfoService {
     public void deleteMong(Long id) {
         mongInfoRepo.deleteById(id);
     }
-    //몽 객체를 BattleDto로 변환하는 로직 구현
-    //    몽의 배틀 정보를 업데이트하는 메소드
+
     public MongBattleDto getMongBattleInfo(Long id) {
-        return null;
+        Optional<Mong> mongOptional = mongInfoRepo.findById(id);
+        if (mongOptional.isPresent()) {
+            Mong mong = mongOptional.get();
+            MongBattleDto mongBattleDto = new MongBattleDto();
+            mongBattleDto.setMongId(mong.getId());
+            mongBattleDto.setWin(mong.getWin());
+            mongBattleDto.setLose(mong.getLose());
+
+            return mongBattleDto;
+        } else {
+            return null;
+        }
     }
 
     public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto) {
@@ -64,9 +73,9 @@ public class MongInfoService {
 
             existingMong.setWin(mongBattleDto.getWin());
             existingMong.setLose(mongBattleDto.getLose());
-
-            mongInfoRepo.save(existingMong);
-            return convertToMongBattleDto(existingMong);
+            Mong updatedMong = mongInfoRepo.save(existingMong);
+//            mongInfoRepo.save(existingMong);
+            return convertToMongBattleDto(updatedMong);
         } else {
             return null;
         }
@@ -80,4 +89,9 @@ public class MongInfoService {
         return mongBattleDto;
     }
 }
+
+//오후 4:41 2024-01-18
+// getMongBattleInfo 메소드의 미구현 로직 문제 ---> return  null로 되어 있음 MongBattleDto를 반환하도록 작성해야 함
+//updateBattleDto메소드의 리팩토링: 불필요하게 private메서드로 되어있음
+//독립적인 유틸리티 클래스로 옮기거나 convertToMongBattleInfo 메소드를 MongInfoService 에 넣거나 하는게 좋을 듯.
 
