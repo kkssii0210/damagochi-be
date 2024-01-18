@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class BattleRoom {
         this.nowTurn = 1;
     }
     // A 가 먼저 공격 (A는 기본적으로 먼저 방만든 사람이 됨)
-    public void handlerActions(BattleMessageReqDto battleMessageReqDto, BattleService battleService)
+    public void handlerActions(BattleMessageReqDto battleMessageReqDto, BattleService battleService, SimpMessagingTemplate messagingTemplate)
             throws IOException, RuntimeException {
 
         String order = battleMessageReqDto.getOrder();
@@ -125,10 +126,15 @@ public class BattleRoom {
                 battleLog.setSelectB(null);
             }
 
+            // 메시지 전송 부분 수정
+            String sessionIdA = sessionIds.get("A");
+            String sessionIdB = sessionIds.get("B");
+
             battleMessageResDto.setOrder("A");
-            battleService.sendMessage(sessions.get("A"), battleMessageResDto);
+            battleService.sendMessage(sessionIdA, "/queue/battle", battleMessageResDto, messagingTemplate);
+
             battleMessageResDto.setOrder("B");
-            battleService.sendMessage(sessions.get("B"), battleMessageResDto);
+            battleService.sendMessage(sessionIdB, "/queue/battle", battleMessageResDto, messagingTemplate);
         }
     }
 }

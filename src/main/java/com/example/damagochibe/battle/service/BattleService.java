@@ -5,15 +5,18 @@ import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
 import com.example.damagochibe.battle.vo.BattleLog;
 import com.example.damagochibe.battle.vo.BattleLog.FightType;
 import com.example.damagochibe.battle.vo.MongStats;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BattleService {
-
+    private final ObjectMapper objectMapper;
     public BattleMessageResDto battleActive(Integer nowTurn, MongStats statsA, MongStats statsB,
                                             BattleLog battleLog) {
         /*
@@ -123,7 +126,7 @@ public class BattleService {
         }
     }
     public void keepWin(Long mongId) {
-        log.info("keepMoney Call : mongId - {}", mongId);
+        log.info("keepWin Call : mongId - {}", mongId);
         // point history 에 0원이라고 기록
 //        AddPointReqDto addPointReqDto = AddPointReqDto.builder()
 //                .point(0)
@@ -132,6 +135,21 @@ public class BattleService {
 //                .build();
 //        memberServiceClient.addPoint(String.valueOf(findMongMasterResDto.getMemberId()),
 //                addPointReqDto);
+    }
+    public void getWin(Long mongId){
+        log.info("getWin Call : mongId - {}", mongId);
+    }
+    public void getLose(Long mongId){
+        log.info("getLose Call : mongId - {}", mongId);
+    }
+    public <T> void sendMessage(String userSessionId, String destination, T message, SimpMessagingTemplate messagingTemplate) {
+        //destination은 메세지를 보낼 목적지
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            messagingTemplate.convertAndSendToUser(userSessionId, destination, jsonMessage);
+        } catch (JsonProcessingException e) {
+            log.error("메시지 변환 오류", e);
+        }
     }
 
 }
