@@ -4,6 +4,7 @@ import com.example.damagochibe.monginfo.dto.MongBattleDto;
 import com.example.damagochibe.monginfo.dto.MongInfoDto;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.repository.MongInfoRepo;
+import com.nimbusds.jose.crypto.opts.OptionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,46 +53,25 @@ public class MongInfoService {
     }
 
     public MongBattleDto getMongBattleInfo(Long id) {
-        Optional<Mong> mongOptional = mongInfoRepo.findById(id);
-        if (mongOptional.isPresent()) {
-            Mong mong = mongOptional.get();
-            MongBattleDto mongBattleDto = new MongBattleDto();
-            mongBattleDto.setMongId(mong.getId());
-            mongBattleDto.setWin(mong.getWin());
-            mongBattleDto.setLose(mong.getLose());
-
-            return mongBattleDto;
-        } else {
-            return null;
-        }
+        Optional<Mong> optionalMong = mongInfoRepo.findById(id);
+        if(optionalMong.isPresent()){
+            Mong mong = optionalMong.get();
+            return new MongBattleDto(mong.getId(), mong.getWin(), mong.getLose());
+        }else{return null;}
     }
 
-    public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto) {
+    public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto){
         Optional<Mong> mongOptional = mongInfoRepo.findById(id);
-        if (mongOptional.isPresent()) {
+        if(mongOptional.isPresent()){
             Mong existingMong = mongOptional.get();
 
             existingMong.setWin(mongBattleDto.getWin());
             existingMong.setLose(mongBattleDto.getLose());
-            Mong updatedMong = mongInfoRepo.save(existingMong);
-//            mongInfoRepo.save(existingMong);
-            return convertToMongBattleDto(updatedMong);
-        } else {
+            Mong savedMong = mongInfoRepo.save(existingMong);
+            return new MongBattleDto(savedMong.getId(), savedMong.getWin(),savedMong.getLose());
+
+        }else {
             return null;
         }
     }
-
-    private MongBattleDto convertToMongBattleDto(Mong mong) {
-        MongBattleDto mongBattleDto = new MongBattleDto();
-        mongBattleDto.setMongId(mong.getId());
-        mongBattleDto.setWin(mong.getWin());
-        mongBattleDto.setLose(mong.getLose());
-        return mongBattleDto;
-    }
 }
-
-//오후 4:41 2024-01-18
-// getMongBattleInfo 메소드의 미구현 로직 문제 ---> return  null로 되어 있음 MongBattleDto를 반환하도록 작성해야 함
-//updateBattleDto메소드의 리팩토링: 불필요하게 private메서드로 되어있음
-//독립적인 유틸리티 클래스로 옮기거나 convertToMongBattleInfo 메소드를 MongInfoService 에 넣거나 하는게 좋을 듯.
-

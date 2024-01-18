@@ -87,13 +87,12 @@ public class MongInfoController {
 
     @PutMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-        MongBattleDto updateBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-//        updateBattleInfo.setWin(mongBattleDto.getWin());
-//        updateBattleInfo.setLose(mongBattleDto.getLose());
-//        return ResponseEntity.ok(updateBattleInfo);
-        if (updateBattleInfo == null) {
-            return ResponseEntity.notFound().build();
+        MongBattleDto existingInfo = mongInfoService.getMongBattleInfo(id);
+        if (mongBattleDto.getWin() > 0) {
+            existingInfo.setWin(existingInfo.getWin() + 1);
+        } else {
+            existingInfo.setLose(existingInfo.getLose() + 1);
         }
-        return ResponseEntity.ok(updateBattleInfo);
+        return ResponseEntity.ok(existingInfo);
     }
 }
