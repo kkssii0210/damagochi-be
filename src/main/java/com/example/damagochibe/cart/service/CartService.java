@@ -7,10 +7,8 @@ import com.example.damagochibe.Item.liquidMedicine.repository.LiquidMedicineRepo
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
 import com.example.damagochibe.cart.dto.CartReqDto;
-import com.example.damagochibe.cart.dto.CartResDto;
 import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.repository.CartRepository;
-import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ public class CartService {
         System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
         System.out.println("cartReqDto.getStoreId() = " + cartReqDto.getStoreId());
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
+        System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
 
         //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
         // food이면서 storeId(foodId)를 만족해야함
@@ -44,6 +43,7 @@ public class CartService {
                     .playerId(cartReqDto.getPlayerId())
                     .cartItemCategory(food.getCategory())
                     .cartItemName(food.getFoodName())
+                    .cartItemCount(cartReqDto.getItemCount())
                     .cartItemPrice(food.getFoodPrice()).build();
             return cartRepository.save(cart);
         }
@@ -55,6 +55,7 @@ public class CartService {
                     .playerId(cartReqDto.getPlayerId())
                     .cartItemCategory(liquidMedicine.getCategory())
                     .cartItemName(liquidMedicine.getLiquidMedicineName())
+                    .cartItemCount(cartReqDto.getItemCount())
                     .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
             return cartRepository.save(cart);
         }
@@ -66,6 +67,7 @@ public class CartService {
                     .playerId(cartReqDto.getPlayerId())
                     .cartItemCategory(map.getCategory())
                     .cartItemName(map.getMapName())
+                    .cartItemCount(cartReqDto.getItemCount())
                     .cartItemPrice(map.getMapPrice()).build();
             return cartRepository.save(cart);
         }
@@ -81,6 +83,8 @@ public class CartService {
         System.out.println("cart.get(1).getCartItemName() = " + cart.get(1).getCartItemName());
         System.out.println("cart.get(0).getCartItemPrice() = " + cart.get(0).getCartItemPrice());
         System.out.println("cart.get(1).getCartItemPrice() = " + cart.get(1).getCartItemPrice());
+        System.out.println("cart.get(0).getCartItemCount() = " + cart.get(2).getCartItemCount());
+
         return cart;
     }
 }

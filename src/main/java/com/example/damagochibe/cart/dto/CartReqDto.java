@@ -7,4 +7,5 @@ public class CartReqDto {
     private String playerId;
     private Long storeId;
     private String category;
+    private Integer itemCount;
 }

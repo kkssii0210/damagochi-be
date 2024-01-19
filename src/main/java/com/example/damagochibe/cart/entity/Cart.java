@@ -18,6 +18,6 @@ public class Cart {
     private String cartItemCategory;
     private String cartItemName;
     private Integer cartItemPrice;
-    private Long itemCount;
+    private Integer cartItemCount;
 
 }

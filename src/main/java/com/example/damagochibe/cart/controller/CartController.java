@@ -40,6 +40,7 @@ public class CartController {
         System.out.println("cartReqDto.getStoreId() = " + cartReqDto.getStoreId());
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
         System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
+        System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
         cartService.addCart(cartReqDto);
 
         return ResponseEntity.noContent().build();
@@ -48,7 +49,7 @@ public class CartController {
     // 카트 정보 가져오기
     @GetMapping("/itemInfo")
     public ResponseEntity<Object> cartItem(@RequestParam String playerId) {
-        System.out.println("playerId = " + playerId);
+        System.out.println("카트 정보 가져오기 playerId = " + playerId);
 
         List<Cart> cartItem = cartService.getCartItem(playerId);
         return ResponseEntity.ok().body(cartItem);
