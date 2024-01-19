@@ -5,6 +5,8 @@ import com.example.damagochibe.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT m FROM Member m WHERE m.playerId = :playerId")
     Member findMemberByPlayerId(String playerId);
@@ -13,6 +15,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     String findMemberId(Long playerId);
 
     @Query("SELECT c FROM Cart c where c.playerId = :playerId")
-    Cart findCartByPlayerId(String playerId);
+    List<Cart> findCartByPlayerId(String playerId);
+
 
 }

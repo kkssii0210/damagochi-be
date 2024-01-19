@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -41,6 +43,15 @@ public class CartController {
         cartService.addCart(cartReqDto);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // 카트 정보 가져오기
+    @GetMapping("/itemInfo")
+    public ResponseEntity<Object> cartItem(@RequestParam String playerId) {
+        System.out.println("playerId = " + playerId);
+
+        List<Cart> cartItem = cartService.getCartItem(playerId);
+        return ResponseEntity.ok().body(cartItem);
     }
 
 

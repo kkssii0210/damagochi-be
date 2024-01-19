@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -71,4 +72,15 @@ public class CartService {
         return null;
     }
 
+    // 카트에 담은 아이템 정보 불러오기
+    public List<Cart> getCartItem(String playerId) {
+        System.out.println("playerId Service에서 = " + playerId);
+        // playerId를 통해 cart정보를 불러옴
+        List<Cart> cart = cartRepository.findCartByPlayerId(playerId);
+        System.out.println("cart.get(0).getCartItemName() = " + cart.get(0).getCartItemName());
+        System.out.println("cart.get(1).getCartItemName() = " + cart.get(1).getCartItemName());
+        System.out.println("cart.get(0).getCartItemPrice() = " + cart.get(0).getCartItemPrice());
+        System.out.println("cart.get(1).getCartItemPrice() = " + cart.get(1).getCartItemPrice());
+        return cart;
+    }
 }
