@@ -57,7 +57,6 @@ public class StoreService {
                         .itemCategory(food.getCategory())
                         .itemName(food.getFoodName())
                         .itemFunction(food.getFoodFunction())
-                        .itemCategory(food.getCategory())
                         .itemPrice(food.getFoodPrice())
                         .build())
                 .collect(Collectors.toList());
@@ -73,8 +72,8 @@ public class StoreService {
         List<Store> storeMedicineList = liquidMedicineList.getContent().stream()
                 .map(liquidMedicine -> Store.builder()
                         .storeId(liquidMedicine.getLiquidMedicineId())
-                        .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemFunction(liquidMedicine.getLiquidMedicineFunction())
+                        .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemCategory(liquidMedicine.getCategory())
                         .itemPrice(liquidMedicine.getLiquidMedicinePrice())
                         .build())
@@ -90,8 +89,8 @@ public class StoreService {
         List<Store> storeMapList = mapList.getContent().stream()
                 .map(myMap -> Store.builder()
                         .storeId(myMap.getMymapId())
-                        .itemName(myMap.getMapName())
                         .itemFunction(myMap.getMapFunction())
+                        .itemName(myMap.getMapName())
                         .itemCategory(myMap.getCategory())
                         .itemPrice(myMap.getMapPrice())
                         .build())
@@ -184,5 +183,4 @@ public class StoreService {
             mymapRepository.save(map);
         }
     }
-
 }

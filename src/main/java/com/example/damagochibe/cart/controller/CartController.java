@@ -1,17 +1,20 @@
 package com.example.damagochibe.cart.controller;
 
 import com.example.damagochibe.auth.config.AuthConfig;
+import com.example.damagochibe.cart.dto.CartReqDto;
+import com.example.damagochibe.cart.dto.CartResDto;
 import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.service.CartService;
 import com.example.damagochibe.member.entity.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/cart")
 public class CartController {
@@ -19,26 +22,26 @@ public class CartController {
     private final AuthConfig authConfig;
 
     @GetMapping("/accessToken")
-    public Cart findMemberAndCreateCart(HttpServletRequest request) {
+    public ResponseEntity findMemberAndGetCart(HttpServletRequest request) {
         Member loginMember = authConfig.tokenValidationService(request);
-        // 로그인한 유저의 playerId를 가져옴
-        String playerId = loginMember.getPlayerId();
-
+        // localStorage의 액세스 토큰과
+        // 서버에 저장된 액세스 토큰에 대응하는 멤버가 없으면 unAuthorized, 아니면 ok
         if (loginMember != null) {
-            // 로그인 한 멤버면 playerId로 Cart 정보 가져오기
-            return cartService.findCartById(playerId);
+            return ResponseEntity.ok().body(loginMember);
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-//    // 카트에 아이템 추가하기
-//    @PostMapping("add")
-//    public Cart addCart(Cart cart) {
-//        // playerId로 가져와야함.
-//        cartService.addCart();
-//
-//
-//    }
+    // 카트에 아이템 추가하기
+    @PostMapping("/add")
+    public ResponseEntity addCart(@RequestBody CartReqDto cartReqDto) {
+        System.out.println("cartReqDto.getStoreId() = " + cartReqDto.getStoreId());
+        System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
+        System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
+        cartService.addCart(cartReqDto);
+
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

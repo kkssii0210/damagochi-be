@@ -3,15 +3,19 @@ package com.example.damagochibe.store.controller;
 import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
+import com.example.damagochibe.auth.config.AuthConfig;
+import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.store.dto.DeleteReqDto;
 import com.example.damagochibe.store.dto.StoreDto;
 import com.example.damagochibe.store.entity.Store;
 import com.example.damagochibe.store.service.StoreService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,20 +31,33 @@ import java.util.stream.Collectors;
 public class StoreController {
 
     private final StoreService storeService;
+    private final AuthConfig authConfig;
+
+    @GetMapping("/accessToken")
+    public ResponseEntity memberInfo(HttpServletRequest request) {
+        Member loginMember = authConfig.tokenValidationService(request);
+
+        if (loginMember != null) {
+
+            return ResponseEntity.ok().body(loginMember);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
 
     @PostMapping("/item/register")
     public ResponseEntity<Object> register(@Validated @RequestBody StoreDto storeDto) {
         System.out.println("storeDto = " + storeDto);
 
-            Store store = new Store();
-            if (storeDto.getItemCategory().equals("food")) {
-                Food food = storeService.foodRegister(convertToFood(storeDto));
-            } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
-                LiquidMedicine medicine = storeService.liquidMedicineRegister(convertToMedicine(storeDto));
-            } else if (storeDto.getItemCategory().equals("map")) {
-                Mymap map = storeService.mapRegister(convertToMap(storeDto));
-            }
-            return ResponseEntity.ok().body(store);
+        Store store = new Store();
+        if (storeDto.getItemCategory().equals("food")) {
+            storeService.foodRegister(convertToFood(storeDto));
+        } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
+            storeService.liquidMedicineRegister(convertToMedicine(storeDto));
+        } else if (storeDto.getItemCategory().equals("map")) {
+            storeService.mapRegister(convertToMap(storeDto));
+        }
+        return ResponseEntity.ok().body(store);
     }
 
     // storeDto를 Food, medicine, map Entity로 바꿔주는 메소드
@@ -95,7 +112,6 @@ public class StoreController {
 
     @GetMapping("/item/view/id/{storeId}")
     public StoreDto itemViewById(@PathVariable("storeId") Long storeId, Pageable pageable) {
-
         Food food = storeService.foodViewById(storeId);
         LiquidMedicine liquidMedicine = storeService.liquidMedicineViewById(storeId);
         Mymap map = storeService.mapViewById(storeId);
@@ -144,15 +160,13 @@ public class StoreController {
 
     @PutMapping("/item/edit/id/{storeId}")
     public void updateItem(@PathVariable Long storeId, @RequestBody StoreDto storeDto) {
-        //만약 category가 분류되어 나오면 foodRepository에만 저장할 수 있음.
         System.out.println("storeId = " + storeId);
         System.out.println("store.getStoreId() = " + storeDto.getStoreId());
         System.out.println("store.getItemName() = " + storeDto.getItemName());
+        System.out.println("storeDto.getItemCategory() = " + storeDto.getItemCategory());
         System.out.println("store.getItemFunction() = " + storeDto.getItemFunction());
         System.out.println("store.getItemPrice() = " + storeDto.getItemPrice());
         storeService.itemEdit(storeId, storeDto);
     }
-
-
 
 }
