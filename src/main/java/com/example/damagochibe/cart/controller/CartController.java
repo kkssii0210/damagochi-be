@@ -41,6 +41,7 @@ public class CartController {
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
         System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
         System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
+        System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
         cartService.addCart(cartReqDto);
 
         return ResponseEntity.noContent().build();

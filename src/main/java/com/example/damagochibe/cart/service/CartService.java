@@ -33,43 +33,59 @@ public class CartService {
         System.out.println("cartReqDto.getStoreId() = " + cartReqDto.getStoreId());
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
         System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
+        System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
 
-        //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
-        // food이면서 storeId(foodId)를 만족해야함
-        if (cartReqDto.getCategory().equals("food")) {
-            Optional<Food> foodInfo = foodRepository.findById(cartReqDto.getStoreId());
-            Food food = foodInfo.get();
-            Cart cart = Cart.builder()
-                    .playerId(cartReqDto.getPlayerId())
-                    .cartItemCategory(food.getCategory())
-                    .cartItemName(food.getFoodName())
-                    .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(food.getFoodPrice()).build();
-            return cartRepository.save(cart);
-        }
+        // 저장할 때 같은 이름이 있다면, 새로 저장되는게 아닌 기존 수량에서 + 되도록 해야함. 없다면 새로 저장
+        String itemName = cartReqDto.getItemName();
+        String playerId = cartReqDto.getPlayerId();
+        Cart item = cartRepository.findCartByPlayerIdAndAndCartItemName(playerId, itemName); // 주의: 매개변수 순서 지키기
 
-        if (cartReqDto.getCategory().equals("liquidMedicine")) {
-            Optional<LiquidMedicine> liquidMedicineInfo = liquidMedicineRepository.findById(cartReqDto.getStoreId());
-            LiquidMedicine liquidMedicine = liquidMedicineInfo.get();
-            Cart cart = Cart.builder()
-                    .playerId(cartReqDto.getPlayerId())
-                    .cartItemCategory(liquidMedicine.getCategory())
-                    .cartItemName(liquidMedicine.getLiquidMedicineName())
-                    .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
-            return cartRepository.save(cart);
-        }
+        if (item != null) {
+            System.out.println("item.getCartItemCount() = " + item.getCartItemCount());
+            Integer oldCount = item.getCartItemCount();
+            int newCount = oldCount + cartReqDto.getItemCount();
+            System.out.println("newCount = " + newCount);
+            item.setCartItemCount(newCount);
+        } else {
+            //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
+            // food이면서 storeId(foodId)를 만족해야함
+            if (cartReqDto.getCategory().equals("food")) {
 
-        if (cartReqDto.getCategory().equals("map")) {
-            Optional<Mymap> mapInfo = mapRepository.findById(cartReqDto.getStoreId());
-            Mymap map = mapInfo.get();
-            Cart cart = Cart.builder()
-                    .playerId(cartReqDto.getPlayerId())
-                    .cartItemCategory(map.getCategory())
-                    .cartItemName(map.getMapName())
-                    .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(map.getMapPrice()).build();
-            return cartRepository.save(cart);
+                Optional<Food> foodInfo = foodRepository.findById(cartReqDto.getStoreId());
+                Food food = foodInfo.get();
+                Cart cart = Cart.builder()
+                        .playerId(cartReqDto.getPlayerId())
+                        .cartItemCategory(food.getCategory())
+                        .cartItemName(food.getFoodName())
+                        .cartItemCount(cartReqDto.getItemCount())
+                        .cartItemPrice(food.getFoodPrice()).build();
+                return cartRepository.save(cart);
+            }
+
+            if (cartReqDto.getCategory().equals("liquidMedicine")) {
+                Optional<LiquidMedicine> liquidMedicineInfo = liquidMedicineRepository.findById(cartReqDto.getStoreId());
+                LiquidMedicine liquidMedicine = liquidMedicineInfo.get();
+                Cart cart = Cart.builder()
+                        .playerId(cartReqDto.getPlayerId())
+                        .cartItemCategory(liquidMedicine.getCategory())
+                        .cartItemName(liquidMedicine.getLiquidMedicineName())
+                        .cartItemCount(cartReqDto.getItemCount())
+                        .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
+                return cartRepository.save(cart);
+            }
+
+            if (cartReqDto.getCategory().equals("map")) {
+                Optional<Mymap> mapInfo = mapRepository.findById(cartReqDto.getStoreId());
+                Mymap map = mapInfo.get();
+                Cart cart = Cart.builder()
+                        .playerId(cartReqDto.getPlayerId())
+                        .cartItemCategory(map.getCategory())
+                        .cartItemName(map.getMapName())
+                        .cartItemCount(cartReqDto.getItemCount())
+                        .cartItemPrice(map.getMapPrice()).build();
+                return cartRepository.save(cart);
+            }
+            return null;
         }
         return null;
     }
@@ -79,12 +95,8 @@ public class CartService {
         System.out.println("playerId Service에서 = " + playerId);
         // playerId를 통해 cart정보를 불러옴
         List<Cart> cart = cartRepository.findCartByPlayerId(playerId);
-        System.out.println("cart.get(0).getCartItemName() = " + cart.get(0).getCartItemName());
-        System.out.println("cart.get(1).getCartItemName() = " + cart.get(1).getCartItemName());
-        System.out.println("cart.get(0).getCartItemPrice() = " + cart.get(0).getCartItemPrice());
-        System.out.println("cart.get(1).getCartItemPrice() = " + cart.get(1).getCartItemPrice());
-        System.out.println("cart.get(0).getCartItemCount() = " + cart.get(2).getCartItemCount());
 
         return cart;
     }
 }
+

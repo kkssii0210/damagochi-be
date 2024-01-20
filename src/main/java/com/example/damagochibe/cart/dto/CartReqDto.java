@@ -8,4 +8,5 @@ public class CartReqDto {
     private Long storeId;
     private String category;
     private Integer itemCount;
+    private String itemName;
 }
