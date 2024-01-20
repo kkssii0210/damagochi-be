@@ -94,9 +94,18 @@ public class CartService {
     public List<Cart> getCartItem(String playerId) {
         System.out.println("playerId Service에서 = " + playerId);
         // playerId를 통해 cart정보를 불러옴
-        List<Cart> cart = cartRepository.findCartByPlayerId(playerId);
+        return cartRepository.findCartByPlayerId(playerId);
+    }
 
-        return cart;
+    public void deleteCartItem(CartReqDto cartReqDto) {
+        System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
+        System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
+
+        String itemName = cartReqDto.getItemName();
+        String playerId = cartReqDto.getPlayerId();
+
+        Long cartId = cartRepository.findCartIdByItemNameAndPlayerId(itemName, playerId);
+        cartRepository.deleteById(cartId);
     }
 }
 

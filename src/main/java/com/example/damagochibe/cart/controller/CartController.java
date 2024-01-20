@@ -56,5 +56,12 @@ public class CartController {
         return ResponseEntity.ok().body(cartItem);
     }
 
+    @DeleteMapping("/delete")
+    public void cartItemDelete(@RequestBody CartReqDto cartReqDto) {
+        System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
+        System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
+        cartService.deleteCartItem(cartReqDto);
+    }
+
 
 }
