@@ -147,8 +147,6 @@ public class StoreController {
         return combinedStore;
     }
 
-
-
     // 아이템 삭제하기
     @DeleteMapping("/item/delete")
     public void deleteItem(@RequestBody DeleteReqDto deleteReqDto) {

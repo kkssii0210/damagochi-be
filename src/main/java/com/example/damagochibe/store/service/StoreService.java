@@ -68,6 +68,7 @@ public class StoreService {
 
     public Page<Store> liquidMedicineList(Pageable pageable) {
         Page<LiquidMedicine> liquidMedicineList = liquidMedicineRepository.findAll(pageable);
+        System.out.println("liquidMedicineList.getContent() = " + liquidMedicineList.getContent());
 
         List<Store> storeMedicineList = liquidMedicineList.getContent().stream()
                 .map(liquidMedicine -> Store.builder()
@@ -84,19 +85,21 @@ public class StoreService {
     }
 
     public Page<Store> mapList(Pageable pageable) {
+
         Page<Mymap> mapList = mymapRepository.findAll(pageable);
-
+        System.out.println("mapList.getContent() = " + mapList.getContent());
         List<Store> storeMapList = mapList.getContent().stream()
-                .map(myMap -> Store.builder()
-                        .storeId(myMap.getMymapId())
-                        .itemFunction(myMap.getMapFunction())
-                        .itemName(myMap.getMapName())
-                        .itemCategory(myMap.getCategory())
-                        .itemPrice(myMap.getMapPrice())
-                        .build())
-                .collect(Collectors.toList());
+                .filter(myMap -> !"MP000".equals(myMap.getMapCode()))
+                    .map(myMap -> Store.builder()
+                            .storeId(myMap.getMymapId())
+                            .itemFunction(myMap.getMapFunction())
+                            .itemName(myMap.getMapName())
+                            .itemCategory(myMap.getCategory())
+                            .itemPrice(myMap.getMapPrice())
+                            .build())
+                    .collect(Collectors.toList());
 
-        return new PageImpl<>(storeMapList, pageable, mapList.getTotalElements());
+            return new PageImpl<>(storeMapList, pageable, mapList.getTotalElements());
     }
 
     public Food foodViewById(Long foodId) {
