@@ -53,6 +53,7 @@ public class CartController {
         System.out.println("카트 정보 가져오기 playerId = " + playerId);
 
         List<Cart> cartItem = cartService.getCartItem(playerId);
+        System.out.println("cartItem.get(0).getPlayerId() = " + cartItem.get(0).getPlayerId());
         return ResponseEntity.ok().body(cartItem);
     }
 

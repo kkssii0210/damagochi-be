@@ -4,6 +4,8 @@ import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.auth.config.AuthConfig;
+import com.example.damagochibe.cart.dto.CartReqDto;
+import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.store.dto.DeleteReqDto;
 import com.example.damagochibe.store.dto.StoreDto;
@@ -144,6 +146,8 @@ public class StoreController {
 
         return combinedStore;
     }
+
+
 
     // 아이템 삭제하기
     @DeleteMapping("/item/delete")

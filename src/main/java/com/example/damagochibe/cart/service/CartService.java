@@ -40,55 +40,64 @@ public class CartService {
         String playerId = cartReqDto.getPlayerId();
         Cart item = cartRepository.findCartByPlayerIdAndAndCartItemName(playerId, itemName); // 주의: 매개변수 순서 지키기
 
-        if (item != null) {
+        // 아예 없다면 수량 뿐만 아니라 모두  save해야함
+        if (item == null) {
+            Cart newCartItem = createCartItem(cartReqDto);
+            return cartRepository.save(newCartItem);
+        } else {
             System.out.println("item.getCartItemCount() = " + item.getCartItemCount());
             Integer oldCount = item.getCartItemCount();
             int newCount = oldCount + cartReqDto.getItemCount();
-            System.out.println("newCount = " + newCount);
+            System.out.println("newCount 찍어보기 = " + newCount);
             item.setCartItemCount(newCount);
-        } else {
-            //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
-            // food이면서 storeId(foodId)를 만족해야함
-            if (cartReqDto.getCategory().equals("food")) {
+            System.out.println("setItemCount 후 추가된 newCount = " + newCount);
 
-                Optional<Food> foodInfo = foodRepository.findById(cartReqDto.getStoreId());
-                Food food = foodInfo.get();
-                Cart cart = Cart.builder()
-                        .playerId(cartReqDto.getPlayerId())
-                        .cartItemCategory(food.getCategory())
-                        .cartItemName(food.getFoodName())
-                        .cartItemCount(cartReqDto.getItemCount())
-                        .cartItemPrice(food.getFoodPrice()).build();
-                return cartRepository.save(cart);
-            }
+            return cartRepository.save(item);
+        }
+    }
 
-            if (cartReqDto.getCategory().equals("liquidMedicine")) {
-                Optional<LiquidMedicine> liquidMedicineInfo = liquidMedicineRepository.findById(cartReqDto.getStoreId());
-                LiquidMedicine liquidMedicine = liquidMedicineInfo.get();
-                Cart cart = Cart.builder()
-                        .playerId(cartReqDto.getPlayerId())
-                        .cartItemCategory(liquidMedicine.getCategory())
-                        .cartItemName(liquidMedicine.getLiquidMedicineName())
-                        .cartItemCount(cartReqDto.getItemCount())
-                        .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
-                return cartRepository.save(cart);
-            }
+    private Cart createCartItem(CartReqDto cartReqDto) {
+        //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
+        // food이면서 storeId(foodId)를 만족해야함
+        if (cartReqDto.getCategory().equals("food")) {
 
-            if (cartReqDto.getCategory().equals("map")) {
-                Optional<Mymap> mapInfo = mapRepository.findById(cartReqDto.getStoreId());
-                Mymap map = mapInfo.get();
-                Cart cart = Cart.builder()
-                        .playerId(cartReqDto.getPlayerId())
-                        .cartItemCategory(map.getCategory())
-                        .cartItemName(map.getMapName())
-                        .cartItemCount(cartReqDto.getItemCount())
-                        .cartItemPrice(map.getMapPrice()).build();
-                return cartRepository.save(cart);
-            }
-            return null;
+            Optional<Food> foodInfo = foodRepository.findById(cartReqDto.getStoreId());
+            Food food = foodInfo.get();
+            Cart cart = Cart.builder()
+                    .playerId(cartReqDto.getPlayerId())
+                    .cartItemCategory(food.getCategory())
+                    .cartItemName(food.getFoodName())
+                    .cartItemCount(cartReqDto.getItemCount())
+                    .cartItemPrice(food.getFoodPrice()).build();
+            return cartRepository.save(cart);
+        }
+
+        if (cartReqDto.getCategory().equals("liquidMedicine")) {
+            Optional<LiquidMedicine> liquidMedicineInfo = liquidMedicineRepository.findById(cartReqDto.getStoreId());
+            LiquidMedicine liquidMedicine = liquidMedicineInfo.get();
+            Cart cart = Cart.builder()
+                    .playerId(cartReqDto.getPlayerId())
+                    .cartItemCategory(liquidMedicine.getCategory())
+                    .cartItemName(liquidMedicine.getLiquidMedicineName())
+                    .cartItemCount(cartReqDto.getItemCount())
+                    .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
+            return cartRepository.save(cart);
+        }
+
+        if (cartReqDto.getCategory().equals("map")) {
+            Optional<Mymap> mapInfo = mapRepository.findById(cartReqDto.getStoreId());
+            Mymap map = mapInfo.get();
+            Cart cart = Cart.builder()
+                    .playerId(cartReqDto.getPlayerId())
+                    .cartItemCategory(map.getCategory())
+                    .cartItemName(map.getMapName())
+                    .cartItemCount(cartReqDto.getItemCount())
+                    .cartItemPrice(map.getMapPrice()).build();
+            return cartRepository.save(cart);
         }
         return null;
     }
+
 
     // 카트에 담은 아이템 정보 불러오기
     public List<Cart> getCartItem(String playerId) {
