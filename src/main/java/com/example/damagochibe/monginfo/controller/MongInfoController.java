@@ -85,14 +85,28 @@ public class MongInfoController {
         return ResponseEntity.ok(battleInfo);
     }
 
-    @PutMapping("/battleInfo/{id}")
-    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-        MongBattleDto existingInfo = mongInfoService.updateMongBattleInfo(id);
-        if (mongBattleDto.getWin() > 0) {
-            existingInfo.setWin(existingInfo.getWin() + 1);
-        } else {
-            existingInfo.setLose(existingInfo.getLose() + 1);
-        }
+//    @PutMapping("/battleInfo/{id}")
+//    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
+//        MongBattleDto existingInfo = mongInfoService.updateMongBattleInfo(id);
+//        if (mongBattleDto.getWin() > 0) {
+//            existingInfo.setWin(existingInfo.getWin() + 1);
+//        } else {
+//            existingInfo.setLose(existingInfo.getLose() + 1);
+//        }
+//        return ResponseEntity.ok(existingInfo);
+//    }
+    @PutMapping("/battleInfo/{id}/win")
+    public ResponseEntity<MongBattleDto> updateWin(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto){
+        MongBattleDto existingInfo = mongInfoService.updateWin(id);
+        existingInfo.setWin(existingInfo.getWin() + 1);
         return ResponseEntity.ok(existingInfo);
+    }
+
+    @PutMapping("/battleInfo/{id}/lose")
+    public ResponseEntity<MongBattleDto> updateLose(@PathVariable Long id, @PathVariable MongBattleDto mongBattleDto){
+        MongBattleDto existingInfo = mongInfoService.updateLose(id);
+        existingInfo.setLose(existingInfo.getLose() + 1);
+        return ResponseEntity.ok(existingInfo);
+
     }
 }

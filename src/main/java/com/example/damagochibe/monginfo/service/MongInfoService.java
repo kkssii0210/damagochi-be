@@ -60,19 +60,57 @@ public class MongInfoService {
             return null;
         }
     }
+//    주어진 아이디에 따라 몽을 조회하고 몽의 정보를 가져와서 몽배틀디티오객체로 변환하여 반환하는 메솓,
 
-    public MongBattleDto updateMongBattleInfo(Long id) {
+//    public MongBattleDto updateMongBattleInfo(Long id) {
+//        Optional<Mong> mongOptional = mongInfoRepo.findById(id);
+//        if (mongOptional.isPresent()) {
+//            Mong existingMong = mongOptional.get();
+//            if (existingMong.getWin() > 0 ){
+//                existingMong.setWin(existingMong.getWin()+ 1);
+//            }else {
+//                existingMong.setLose(existingMong.getLose()+ 1);
+//            }
+//            Mong savedMong = mongInfoRepo.save(existingMong);
+//            return new MongBattleDto(savedMong.getId(), savedMong.getWin(), savedMong.getLose());
+//
+//        } else {
+//            return null;
+//        }
+//    }
+//
+//    public MongBattleDto updateGetWin(Long id) {
+//        Optional<Mong> mongOptional = mongInfoRepo.findById(id);
+//        //아이디에 해당하는 몽을 조회 함
+//        //몽이 존재하면 실행될 코드
+//        if (mongOptional.isPresent()) {
+//            Mong existinMong = mongOptional.get();
+//            existinMong.setWin(existinMong.getWin() + 1);
+//            Mong savedMong = mongInfoRepo.save(existingMong);
+//            return new MongBattleDto(savedMong.getId(), savedMong.getWin(), savedMong.getLose());
+//        } else {
+//            return null;
+//        }
+//    }
+
+    public MongBattleDto updateWin(Long id) {
+        Optional<Mong> mongOptional = mongInfoRepo.findById(id);
+        if (mongOptional.isPresent()) {
+            Mong existinMong = mongOptional.get();
+            existinMong.setWin(existinMong.getWin() + 1);
+            Mong savedMong = mongInfoRepo.save(existinMong);
+            return new MongBattleDto(savedMong.getId(), savedMong.getWin(), savedMong.getLose());
+        } else {
+            return null;
+        }
+    }
+    public MongBattleDto updateLose(Long id) {
         Optional<Mong> mongOptional = mongInfoRepo.findById(id);
         if (mongOptional.isPresent()) {
             Mong existingMong = mongOptional.get();
-            if (existingMong.getWin() > 0 ){
-                existingMong.setWin(existingMong.getWin()+ 1);
-            }else {
-                existingMong.setLose(existingMong.getLose()+ 1);
-            }
+            existingMong.setLose(existingMong.getLose() + 1);
             Mong savedMong = mongInfoRepo.save(existingMong);
             return new MongBattleDto(savedMong.getId(), savedMong.getWin(), savedMong.getLose());
-
         } else {
             return null;
         }
