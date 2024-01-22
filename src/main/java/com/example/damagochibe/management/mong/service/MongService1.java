@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,5 +61,15 @@ public class MongService1 {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    public Map<String, Object> getUser(String userName) {
+        Map<String, Object> map = new HashMap<>();
+        Mong userA = mongRepository.findByMemberId("hr@hr");
+        Mong userB = mongRepository.findByMemberId("hr2@hr");
+        map.put("userA", userA);
+        map.put("userB", userB);
+        map.put("userName", userName);
+        return map;
     }
 }
