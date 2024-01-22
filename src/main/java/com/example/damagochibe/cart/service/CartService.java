@@ -114,6 +114,7 @@ public class CartService {
         String playerId = cartReqDto.getPlayerId();
 
         Long cartId = cartRepository.findCartIdByItemNameAndPlayerId(itemName, playerId);
+        System.out.println("삭제 하려는 cartId = " + cartId);
         cartRepository.deleteById(cartId);
     }
 }
