@@ -1,10 +1,8 @@
 package com.example.damagochibe.monginfo.service;
 
 import com.example.damagochibe.monginfo.dto.MongBattleDto;
-import com.example.damagochibe.monginfo.dto.MongInfoDto;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.repository.MongInfoRepo;
-import com.nimbusds.jose.crypto.opts.OptionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +15,7 @@ import java.util.Optional;
 @Transactional
 public class MongInfoService {
     private final MongInfoRepo mongInfoRepo;
+//    private final MongBattleDto mongBattleDto;
 
     public Long findMongByMember(Long memberId) {
         return mongInfoRepo.findMongByMember(memberId);
@@ -54,23 +53,27 @@ public class MongInfoService {
 
     public MongBattleDto getMongBattleInfo(Long id) {
         Optional<Mong> optionalMong = mongInfoRepo.findById(id);
-        if(optionalMong.isPresent()){
+        if (optionalMong.isPresent()) {
             Mong mong = optionalMong.get();
             return new MongBattleDto(mong.getId(), mong.getWin(), mong.getLose());
-        }else{return null;}
+        } else {
+            return null;
+        }
     }
 
-    public MongBattleDto updateMongBattleInfo(Long id, MongBattleDto mongBattleDto){
+    public MongBattleDto updateMongBattleInfo(Long id) {
         Optional<Mong> mongOptional = mongInfoRepo.findById(id);
-        if(mongOptional.isPresent()){
+        if (mongOptional.isPresent()) {
             Mong existingMong = mongOptional.get();
-
-            existingMong.setWin(mongBattleDto.getWin());
-            existingMong.setLose(mongBattleDto.getLose());
+            if (existingMong.getWin() > 0 ){
+                existingMong.setWin(existingMong.getWin()+ 1);
+            }else {
+                existingMong.setLose(existingMong.getLose()+ 1);
+            }
             Mong savedMong = mongInfoRepo.save(existingMong);
-            return new MongBattleDto(savedMong.getId(), savedMong.getWin(),savedMong.getLose());
+            return new MongBattleDto(savedMong.getId(), savedMong.getWin(), savedMong.getLose());
 
-        }else {
+        } else {
             return null;
         }
     }

@@ -87,7 +87,7 @@ public class MongInfoController {
 
     @PutMapping("/battleInfo/{id}")
     public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-        MongBattleDto existingInfo = mongInfoService.getMongBattleInfo(id);
+        MongBattleDto existingInfo = mongInfoService.updateMongBattleInfo(id);
         if (mongBattleDto.getWin() > 0) {
             existingInfo.setWin(existingInfo.getWin() + 1);
         } else {
