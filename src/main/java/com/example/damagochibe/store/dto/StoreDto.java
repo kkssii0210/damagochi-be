@@ -1,8 +1,11 @@
 package com.example.damagochibe.store.dto;
 
+import com.example.damagochibe.itemFile.entity.ItemFile;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class StoreDto {
@@ -15,4 +18,6 @@ public class StoreDto {
     private String itemFunction;
     @NotNull
     private Integer itemPrice;
+
+    private List<ItemFile> itemFiles;
 }

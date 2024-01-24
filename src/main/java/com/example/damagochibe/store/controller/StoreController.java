@@ -4,8 +4,6 @@ import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.auth.config.AuthConfig;
-import com.example.damagochibe.cart.dto.CartReqDto;
-import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.store.dto.DeleteReqDto;
 import com.example.damagochibe.store.dto.StoreDto;
@@ -21,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,16 +48,17 @@ public class StoreController {
 
 
     @PostMapping("/item/register")
-    public ResponseEntity<Object> register(@Validated @RequestBody StoreDto storeDto) {
+    public ResponseEntity<Object> register(@Validated StoreDto storeDto,
+                                           @RequestParam( value = "files[]", required = false) MultipartFile[] files) {
         System.out.println("storeDto = " + storeDto);
 
         Store store = new Store();
         if (storeDto.getItemCategory().equals("food")) {
-            storeService.foodRegister(convertToFood(storeDto));
+            storeService.foodRegister(convertToFood(storeDto), files);
         } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
-            storeService.liquidMedicineRegister(convertToMedicine(storeDto));
+            storeService.liquidMedicineRegister(convertToMedicine(storeDto), files);
         } else if (storeDto.getItemCategory().equals("map")) {
-            storeService.mapRegister(convertToMap(storeDto));
+            storeService.mapRegister(convertToMap(storeDto), files);
         }
         return ResponseEntity.ok().body(store);
     }
@@ -70,7 +71,7 @@ public class StoreController {
                 .category(storeDto.getItemCategory())
                 .foodFunction(storeDto.getItemFunction())
                 .foodPrice(storeDto.getItemPrice()).build();
-        System.out.println("food.getStoreId()=" + food.getStoreId());
+        System.out.println("food.getStoreId()=" + food.getStoreId()); //null
         return food;
 
     }
@@ -97,12 +98,22 @@ public class StoreController {
         return map;
     }
 
-    @GetMapping("/item/list")
-    public Page<Store> itemList(Pageable pageable) {
+    // storeId, category를 가져와야함
+    @GetMapping("/itemInfo")
+    public StoreDto itemInfo() {
+        return storeService.itemInfo();
+    }
 
-        Page<Store> storeFoodList = storeService.foodList(pageable);
-        Page<Store> storeLiquidMedicineList = storeService.liquidMedicineList(pageable);
-        Page<Store> storeMapList = storeService.mapList(pageable);
+
+    @GetMapping("/item/list")
+    public Page<Store> itemList(Pageable pageable, @RequestParam StoreDto storeDto) {
+        System.out.println("storeDto = " + storeDto.getItemFiles());
+        System.out.println("storeDto.getStoreId() = " + storeDto.getStoreId());
+        System.out.println("storeDto.getItemCategory() = " + storeDto.getItemCategory());
+
+        Page<Store> storeFoodList = storeService.foodList(pageable, storeDto.getStoreId(), storeDto.getItemCategory());
+        Page<Store> storeLiquidMedicineList = storeService.liquidMedicineList(pageable, storeDto.getStoreId(), storeDto.getItemCategory() );
+        Page<Store> storeMapList = storeService.mapList(pageable, storeDto.getStoreId(), storeDto.getItemCategory());
 
         List<Page<Store>> totalList = Arrays.asList(storeFoodList, storeLiquidMedicineList, storeMapList);
 

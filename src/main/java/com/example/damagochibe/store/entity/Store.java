@@ -1,8 +1,12 @@
 package com.example.damagochibe.store.entity;
 
+import com.example.damagochibe.itemFile.entity.ItemFile;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +23,10 @@ public class Store {
     private String itemName;
     private String itemFunction;
     private Integer itemPrice;
+
+//    @OneToMany(mappedBy = "store")
+//    @JsonManagedReference
+//    private List<ItemFile> itemFiles = new ArrayList<>();
 
     private Long memberId;
 }
