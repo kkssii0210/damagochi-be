@@ -1,5 +1,6 @@
 package com.example.damagochibe.store.dto;
 
+import com.example.damagochibe.itemFile.dto.ItemFileDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,5 +25,5 @@ public class StoreDto {
     @NotNull
     private Integer itemPrice;
 
-    private List<String> itemFileUrls;
+    private List<ItemFileDto> itemFiles;
 }

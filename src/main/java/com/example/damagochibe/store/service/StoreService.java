@@ -6,13 +6,16 @@ import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.liquidMedicine.repository.LiquidMedicineRepository;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
+import com.example.damagochibe.itemFile.dto.ItemFileDto;
+import com.example.damagochibe.itemFile.entity.ItemFile;
+import com.example.damagochibe.itemFile.repository.ItemFileRepository;
 import com.example.damagochibe.store.dto.DeleteReqDto;
 import com.example.damagochibe.store.dto.StoreDto;
-import com.example.damagochibe.store.entity.Store;
 import com.example.damagochibe.store.repository.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +34,11 @@ public class StoreService {
     private final FoodRepository foodRepository;
     private final LiquidMedicineRepository liquidMedicineRepository;
     private final MymapRepository mymapRepository;
+    private final ItemFileRepository itemFileRepository;
+
+
+    @Value("${image.file.prefix}")
+    private String imageUrlPrefix;
 
     // 아이템 등록
     public Food foodRegister(Food food) {
@@ -58,7 +66,7 @@ public class StoreService {
                         .itemName(food.getFoodName())
                         .itemFunction(food.getFoodFunction())
                         .itemPrice(food.getFoodPrice())
-                        .itemFileUrls(getItemFileUrls(food.getFoodId(), food.getCategory()))
+                        .itemFiles(getItemFileUrls(food.getFoodId(), food.getCategory()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -67,12 +75,22 @@ public class StoreService {
 
     }
 
-    private List<String> getItemFileUrls(Long foodId, String category) {
+    private List<ItemFileDto> getItemFileUrls(Long storeId, String category) {
 
+        List<ItemFile> itemFiles = itemFileRepository.findByStoreIdAndCategory(storeId, category);
 
+        // https://study0210.s3.ap-northeast-2.amazonaws.com/damagochi/24/liquidMedicine/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-01-18%20123606.png
 
+        List<ItemFileDto> result = itemFiles.stream().map(e -> ItemFileDto.builder()
+                .id(e.getId())
+                .fileName(e.getFileName())
+//                .storeId(e.getStoreId())
+//                .category(e.getCategory())
+                .fileUrl(imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + e.getFileName())
+                .build())
+                .toList();
 
-        return List.of("fileurl/" + foodId + "/" + category);
+        return result;
     }
 
     public Page<StoreDto> liquidMedicineList(Pageable pageable) {
@@ -86,7 +104,7 @@ public class StoreService {
                         .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemCategory(liquidMedicine.getCategory())
                         .itemPrice(liquidMedicine.getLiquidMedicinePrice())
-                        .itemFileUrls(getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()))
+                        .itemFiles(getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -106,7 +124,7 @@ public class StoreService {
                             .itemName(myMap.getMapName())
                             .itemCategory(myMap.getCategory())
                             .itemPrice(myMap.getMapPrice())
-                            .itemFileUrls(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
+                            .itemFiles(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
                             .build())
                     .collect(Collectors.toList());
 
