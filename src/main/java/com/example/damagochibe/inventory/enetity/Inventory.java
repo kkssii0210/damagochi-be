@@ -30,6 +30,6 @@ public class Inventory {
     private String category;
     @Column(nullable = false)
     private Integer quantity;
-
-
+    @Column(nullable = false)
+    private String image;
 }
