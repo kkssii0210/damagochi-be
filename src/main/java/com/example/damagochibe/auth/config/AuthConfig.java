@@ -25,5 +25,10 @@ public class AuthConfig {
         Optional<Member> byMemberId = memberRepository.findByMemberId(memberIdByAccessToken);
         return byMemberId.orElse(null);
     }
+    public Member tokenValidationServiceV1(String token) {
+        Long memberIdByAccessToken = refreshTokenRepository.findMemberIdByAccessToken(token);
+        Optional<Member> byMemberId = memberRepository.findByMemberId(memberIdByAccessToken);
+        return byMemberId.orElse(null);
+    }
 }
 

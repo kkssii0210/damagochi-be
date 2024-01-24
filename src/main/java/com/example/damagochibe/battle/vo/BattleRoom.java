@@ -7,24 +7,24 @@ import com.example.damagochibe.code.MessageType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Getter
 public class BattleRoom {
     private Integer totalTurn;
-    private String battleRoomId;
+    private Integer battleRoomId;
     private Map<String, String> sessionIds; // 사용자 ID 또는 세션 ID 저장
     private Map<String, MongStats> statsMap;
     private BattleLog battleLog;
     private Integer nowTurn = 0;
     @Builder
-    public BattleRoom(Integer totalTurn, String battleRoomId, String sessionIdA, String sessionIdB, MongStats statsA, MongStats statsB) {
+    public BattleRoom(Integer totalTurn, Integer battleRoomId, String sessionIdA, String sessionIdB, MongStats statsA, MongStats statsB) {
         this.totalTurn = totalTurn;
         this.battleRoomId = battleRoomId;
         this.sessionIds = new HashMap<>() {{
@@ -135,6 +135,28 @@ public class BattleRoom {
 
             battleMessageResDto.setOrder("B");
             battleService.sendMessage(sessionIdB, "/queue/battle", battleMessageResDto, messagingTemplate);
+        }
+    }
+    public boolean isFull() {
+        long count = sessionIds.values().stream()
+                .filter(Objects::nonNull)
+                .count();
+        return count >= 2; // 2명 이상이면 full로 간주
+    }
+    public void addSession(String sessionId, MongStats stats) {
+        log.info("addSession Call!!!");
+        if (!isFull()) {
+            if (sessionIds.get("A") == null) {
+                sessionIds.put("A", sessionId);
+                // statsMap 및 기타 필요한 초기화 로직
+                statsMap.put("A", stats);
+            } else if (sessionIds.get("B") == null) {
+                sessionIds.put("B", sessionId);
+                // statsMap 및 기타 필요한 초기화 로직
+                statsMap.put("B",stats);
+            }
+        } else {
+            throw new IllegalStateException("BattleRoom is already full");
         }
     }
 }

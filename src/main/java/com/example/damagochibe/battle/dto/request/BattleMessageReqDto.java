@@ -10,6 +10,6 @@ public class BattleMessageReqDto {
     private String mongCode;
     private Integer latitude;
     private Integer longitude;
-    private String battleRoomId;
+    private Integer battleRoomId;
     private String order;
 }

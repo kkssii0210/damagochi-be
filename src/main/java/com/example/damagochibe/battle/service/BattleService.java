@@ -4,19 +4,83 @@ import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
 
 import com.example.damagochibe.battle.vo.BattleLog;
 import com.example.damagochibe.battle.vo.BattleLog.FightType;
+import com.example.damagochibe.battle.vo.BattleRoom;
 import com.example.damagochibe.battle.vo.MongStats;
+import com.example.damagochibe.monginfo.entity.Mong;
+import com.example.damagochibe.monginfo.repository.MongInfoRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BattleService {
     private final ObjectMapper objectMapper;
+    private final Map<Integer, BattleRoom> battleRooms = new ConcurrentHashMap<>();
+    private final AtomicInteger nextRoomId = new AtomicInteger(1);
+    private final MongInfoRepo mongInfoRepo;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public List<BattleRoom> getBattleRooms() {
+        return new ArrayList<>(battleRooms.values());
+    }
+    public void updateBattleRooms() {
+        // 배틀룸 목록 또는 상태 변경 로직
+        List<BattleRoom> currentBattleRooms = new ArrayList<>(battleRooms.values());
+        // 변화된 배틀룸 목록을 클라이언트에게 전송
+        messagingTemplate.convertAndSend("/topic/battleRooms", currentBattleRooms);
+    }
+    public synchronized BattleRoom joinOrCreateRoom(String sessionId, Long mongId) {
+        log.info("battleRoom 생성 Call");
+        log.info("받아온 mongId :"+mongId);
+        //mongId로 MongStats 불러와야함.
+        Optional<Mong> byId = mongInfoRepo.findById(mongId);
+        Mong mong = byId.get();
+        // MongStats 인스턴스 생성 또는 조회
+        MongStats stats = MongStats.builder()
+                .mongId(mongId)
+                .health(mong.getHealth())
+                .attribute(mong.getAttribute())
+                .defense(mong.getDefense())
+                .strength(mong.getStrength())
+                .agility(mong.getAgility())
+                .build();
+
+        // 가용한 방 찾기
+        for (BattleRoom room : battleRooms.values()) {
+            if (!room.isFull()) {
+                room.addSession(sessionId,stats);
+                return room;
+            }
+        }
+        // 새 방 생성
+        int newRoomId = nextRoomId.getAndIncrement();
+        BattleRoom newRoom = BattleRoom.builder()
+                .totalTurn(10) // 예시 값
+                .battleRoomId(newRoomId)
+                .sessionIdA(sessionId)
+                .sessionIdB(null) // 초기에는 B 세션 없음
+                .statsA(stats) // stats 초기화
+                .statsB(null) // 초기에는 B stats 없음
+                .build();
+
+        battleRooms.put(newRoomId, newRoom);
+        updateBattleRooms();
+        return newRoom;
+    }
+
     public BattleMessageResDto battleActive(Integer nowTurn, MongStats statsA, MongStats statsB,
                                             BattleLog battleLog) {
         /*
@@ -151,5 +215,4 @@ public class BattleService {
             log.error("메시지 변환 오류", e);
         }
     }
-
 }
