@@ -39,11 +39,11 @@ public class BattleController {
         Long mongId = mongInfoRepo.findMongByPlayerId(memberId);
         log.info("mongId!!! : " + mongId);
         BattleRoom battleRoom = battleService.joinOrCreateRoom(sessionId,mongId);
-        BattleMessageResDto response = BattleMessageResDto.builder()
-                .battleRoomId(battleRoom.getBattleRoomId())
-                .build();
-        // 모든 구독자에게 새로운 BattleRoom 정보 전송
-        messagingTemplate.convertAndSend("/topic/battleRooms", response);
+//        BattleMessageResDto response = BattleMessageResDto.builder()
+//                .battleRoomId(battleRoom.getBattleRoomId())
+//                .build();
+//        // 모든 구독자에게 새로운 BattleRoom 정보 전송
+//        messagingTemplate.convertAndSend("/topic/battleRooms", response);
     }
     @GetMapping("/api/battleRooms")
     public ResponseEntity<List<BattleRoom>> getBattleRooms() {
