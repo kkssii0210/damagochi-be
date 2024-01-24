@@ -41,6 +41,7 @@ public class BattleService {
         List<BattleRoom> currentBattleRooms = new ArrayList<>(battleRooms.values());
         // 변화된 배틀룸 목록을 클라이언트에게 전송
         messagingTemplate.convertAndSend("/topic/battleRooms", currentBattleRooms);
+        log.info("Updated battle rooms sent");
     }
     public synchronized BattleRoom joinOrCreateRoom(String sessionId, Long mongId) {
         log.info("battleRoom 생성 Call");
@@ -62,6 +63,7 @@ public class BattleService {
         for (BattleRoom room : battleRooms.values()) {
             if (!room.isFull()) {
                 room.addSession(sessionId,stats);
+                updateBattleRooms();
                 return room;
             }
         }
