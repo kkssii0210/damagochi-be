@@ -21,7 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,16 +50,17 @@ public class StoreController {
 
 
     @PostMapping("/item/register")
-    public ResponseEntity<Object> register(@Validated @RequestBody StoreDto storeDto) {
+    public ResponseEntity<Object> register(@Validated StoreDto storeDto,
+                                           @RequestParam( value = "files[]", required = false) MultipartFile[] files) {
         System.out.println("storeDto = " + storeDto);
 
         Store store = new Store();
         if (storeDto.getItemCategory().equals("food")) {
-            storeService.foodRegister(convertToFood(storeDto));
+            storeService.foodRegister(convertToFood(storeDto), files);
         } else if (storeDto.getItemCategory().equals("liquidMedicine")) {
-            storeService.liquidMedicineRegister(convertToMedicine(storeDto));
+            storeService.liquidMedicineRegister(convertToMedicine(storeDto), files);
         } else if (storeDto.getItemCategory().equals("map")) {
-            storeService.mapRegister(convertToMap(storeDto));
+            storeService.mapRegister(convertToMap(storeDto), files);
         }
         return ResponseEntity.ok().body(store);
     }
