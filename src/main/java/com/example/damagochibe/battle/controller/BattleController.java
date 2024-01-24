@@ -1,9 +1,12 @@
 package com.example.damagochibe.battle.controller;
 import com.example.damagochibe.auth.config.AuthConfig;
+import com.example.damagochibe.auth.security.CustomUserDetail;
 import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
 import com.example.damagochibe.battle.service.BattleService;
 import com.example.damagochibe.battle.vo.BattleRoom;
+import com.example.damagochibe.management.mong.service.MongService1;
 import com.example.damagochibe.member.entity.Member;
+import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.repository.MongInfoRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Controller
@@ -24,8 +29,10 @@ public class BattleController {
     private final AuthConfig authConfig;
     private final MongInfoRepo mongInfoRepo;
 
+    private final MongService1 mongService1;
+
     @MessageMapping("/createBattleRoom")
-    public void createBattleRoom(SimpMessageHeaderAccessor headerAccessor){
+    public void createBattleRoom(SimpMessageHeaderAccessor headerAccessor) {
         log.info("createBattleRoom Call");
         // 세션 ID 추출
         String sessionId = headerAccessor.getSessionId();
@@ -38,18 +45,29 @@ public class BattleController {
         log.info("memberId!!!! : " + memberId);
         Long mongId = mongInfoRepo.findMongByPlayerId(memberId);
         log.info("mongId!!! : " + mongId);
-        BattleRoom battleRoom = battleService.joinOrCreateRoom(sessionId,mongId);
+        BattleRoom battleRoom = battleService.joinOrCreateRoom(sessionId, mongId);
 //        BattleMessageResDto response = BattleMessageResDto.builder()
 //                .battleRoomId(battleRoom.getBattleRoomId())
 //                .build();
 //        // 모든 구독자에게 새로운 BattleRoom 정보 전송
 //        messagingTemplate.convertAndSend("/topic/battleRooms", response);
     }
+
     @GetMapping("/api/battleRooms")
     public ResponseEntity<List<BattleRoom>> getBattleRooms() {
         // 현재 메모리에 저장된 배틀룸 목록 반환
         List<BattleRoom> rooms = battleService.getBattleRooms();
-        log.info("rooms : "+rooms);
+        log.info("rooms : " + rooms);
         return ResponseEntity.ok(rooms);
     }
+
+//    @CrossOrigin(origins = "http://localhost:5000")
+//    @PutMapping("/api/battle/attack")
+//    public void attack(@RequestBody BattleMessageResDto resDto) {
+//        System.out.println("resDto = " + resDto);
+//        BattleMessageResDto rrr = battleService.attack(resDto);
+//        System.out.println("rrr = " + rrr);
+////        return rrr;
+//    }
+
 }

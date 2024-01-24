@@ -217,4 +217,13 @@ public class BattleService {
             log.error("메시지 변환 오류", e);
         }
     }
+
+    public BattleMessageResDto attack(BattleMessageResDto resDto) {
+        Optional<Mong> mongA = mongInfoRepo.findById(resDto.getMongAId());
+        Optional<Mong> mongB = mongInfoRepo.findById(resDto.getMongBId());
+        resDto.setTurn(mongB.get().getName());
+        resDto.setHealthA(resDto.getHealthA());
+        resDto.setHealthB(resDto.getHealthB() - 10);
+        return resDto;
+    }
 }
