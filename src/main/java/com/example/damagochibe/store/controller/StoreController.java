@@ -98,13 +98,13 @@ public class StoreController {
     }
 
     @GetMapping("/item/list")
-    public Page<Store> itemList(Pageable pageable) {
+    public Page<StoreDto> itemList(Pageable pageable) {
 
-        Page<Store> storeFoodList = storeService.foodList(pageable);
-        Page<Store> storeLiquidMedicineList = storeService.liquidMedicineList(pageable);
-        Page<Store> storeMapList = storeService.mapList(pageable);
+        Page<StoreDto> storeFoodList = storeService.foodList(pageable);
+        Page<StoreDto> storeLiquidMedicineList = storeService.liquidMedicineList(pageable);
+        Page<StoreDto> storeMapList = storeService.mapList(pageable);
 
-        List<Page<Store>> totalList = Arrays.asList(storeFoodList, storeLiquidMedicineList, storeMapList);
+        List<Page<StoreDto>> totalList = Arrays.asList(storeFoodList, storeLiquidMedicineList, storeMapList);
 
         return totalList.stream()
                 .flatMap(list -> list.getContent().stream())

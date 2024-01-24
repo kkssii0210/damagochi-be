@@ -47,17 +47,18 @@ public class StoreService {
 
 
     // 아이템 리스트 가져오기
-    public Page<Store> foodList(Pageable pageable) {
+    public Page<StoreDto> foodList(Pageable pageable) {
 
         Page<Food> foodList = foodRepository.findAll(pageable);
 
-        List<Store> storeFoodList = foodList.getContent().stream()
-                .map(food -> Store.builder()
+        List<StoreDto> storeFoodList = foodList.getContent().stream()
+                .map(food -> StoreDto.builder()
                         .storeId(food.getFoodId())
                         .itemCategory(food.getCategory())
                         .itemName(food.getFoodName())
                         .itemFunction(food.getFoodFunction())
                         .itemPrice(food.getFoodPrice())
+                        .itemFileUrls(getItemFileUrls(food.getFoodId(), food.getCategory()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -66,17 +67,26 @@ public class StoreService {
 
     }
 
-    public Page<Store> liquidMedicineList(Pageable pageable) {
+    private List<String> getItemFileUrls(Long foodId, String category) {
+
+
+
+
+        return List.of("fileurl/" + foodId + "/" + category);
+    }
+
+    public Page<StoreDto> liquidMedicineList(Pageable pageable) {
         Page<LiquidMedicine> liquidMedicineList = liquidMedicineRepository.findAll(pageable);
         System.out.println("liquidMedicineList.getContent() = " + liquidMedicineList.getContent());
 
-        List<Store> storeMedicineList = liquidMedicineList.getContent().stream()
-                .map(liquidMedicine -> Store.builder()
+        List<StoreDto> storeMedicineList = liquidMedicineList.getContent().stream()
+                .map(liquidMedicine -> StoreDto.builder()
                         .storeId(liquidMedicine.getLiquidMedicineId())
                         .itemFunction(liquidMedicine.getLiquidMedicineFunction())
                         .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemCategory(liquidMedicine.getCategory())
                         .itemPrice(liquidMedicine.getLiquidMedicinePrice())
+                        .itemFileUrls(getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -84,18 +94,19 @@ public class StoreService {
 
     }
 
-    public Page<Store> mapList(Pageable pageable) {
+    public Page<StoreDto> mapList(Pageable pageable) {
 
         Page<Mymap> mapList = mymapRepository.findAll(pageable);
         System.out.println("mapList.getContent() = " + mapList.getContent());
-        List<Store> storeMapList = mapList.getContent().stream()
+        List<StoreDto> storeMapList = mapList.getContent().stream()
                 .filter(myMap -> !"MP000".equals(myMap.getMapCode()))
-                    .map(myMap -> Store.builder()
+                    .map(myMap -> StoreDto.builder()
                             .storeId(myMap.getMymapId())
                             .itemFunction(myMap.getMapFunction())
                             .itemName(myMap.getMapName())
                             .itemCategory(myMap.getCategory())
                             .itemPrice(myMap.getMapPrice())
+                            .itemFileUrls(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
                             .build())
                     .collect(Collectors.toList());
 
