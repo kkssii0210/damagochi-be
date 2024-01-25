@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +41,35 @@ public class MongService1 {
         myMong.setDefense(myMong.getDefense() + ((int) (Math.random() * 2.0) + 2));
         mongRepository.save(myMong);
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity evo(Mong mong) {
+        Mong myMong = mongRepository.findByMemberId(mong.getMemberId());
+        int level = myMong.getLevel();
+        int evo = myMong.getEvolutionLevel();
+        if (level >= 1 && evo == 1) {
+            myMong.setEvolutionLevel(2);
+            mongRepository.save(myMong);
+            return ResponseEntity.ok().build();
+        } else if (level >= 4 && evo == 2) {
+            myMong.setEvolutionLevel(3);
+            mongRepository.save(myMong);
+            return ResponseEntity.ok().build();
+        } else if (level >= 8 && evo == 3) {
+            myMong.setEvolutionLevel(4);
+            mongRepository.save(myMong);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    public Map<String, Object> getUser(String userName) {
+        Map<String, Object> map = new HashMap<>();
+        Mong userA = mongRepository.findByMemberId("hr@hr");
+        Mong userB = mongRepository.findByMemberId("hr2@hr");
+        map.put("userA", userA);
+        map.put("userB", userB);
+        map.put("userName", userName);
+        return map;
     }
 }

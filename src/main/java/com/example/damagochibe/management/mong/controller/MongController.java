@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -26,5 +27,16 @@ public class MongController {
     @PutMapping("/levelUp")
     public ResponseEntity levelUp(@RequestBody Mong mong) {
         return mongService1.levelUp(mong.getMemberId());
+    }
+
+    @PutMapping("/evo")
+    public ResponseEntity evo(@RequestBody Mong mong) {
+        System.out.println("mong = " + mong);
+        return mongService1.evo(mong);
+    }
+
+    @GetMapping("/getUser")
+    public Map<String, Object> getUser(@AuthenticationPrincipal CustomUserDetail principal) {
+        return mongService1.getUser(principal.getUsername());
     }
 }
