@@ -15,12 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,16 +33,30 @@ public class BattleService {
     public List<BattleRoom> getBattleRooms() {
         return new ArrayList<>(battleRooms.values());
     }
-    public void updateBattleRooms() {
-        // 배틀룸 목록 또는 상태 변경 로직
-        List<BattleRoom> currentBattleRooms = new ArrayList<>(battleRooms.values());
-        // 변화된 배틀룸 목록을 클라이언트에게 전송
-        messagingTemplate.convertAndSend("/topic/battleRooms", currentBattleRooms);
-        log.info("Updated battle rooms sent");
+
+    public BattleRoom findBattleRoomBySessionId(String sessionId) {
+        for (BattleRoom room : battleRooms.values()) {
+            if (room.getSessionIds().containsValue(sessionId)) {
+                return room;
+            }
+        }
+        return null;
     }
+
+    public void updateBattleRooms(String sessionId) {
+        BattleRoom room = findBattleRoomBySessionId(sessionId);
+        log.info("보낼 세션!!! " + sessionId);
+        messagingTemplate.convertAndSend(
+                "/topic/battleRoom/" + room.getBattleRoomId(),
+                room // 현재 방의 상태 데이터
+        );
+        log.info("Updated battle rooms sent to respective participants");
+    }
+
+
     public synchronized BattleRoom joinOrCreateRoom(String sessionId, Long mongId) {
         log.info("battleRoom 생성 Call");
-        log.info("받아온 mongId :"+mongId);
+        log.info("받아온 mongId :" + mongId);
         //mongId로 MongStats 불러와야함.
         Optional<Mong> byId = mongInfoRepo.findById(mongId);
         Mong mong = byId.get();
@@ -61,8 +73,8 @@ public class BattleService {
         // 가용한 방 찾기
         for (BattleRoom room : battleRooms.values()) {
             if (!room.isFull()) {
-                room.addSession(sessionId,stats);
-                updateBattleRooms();
+                room.addSession(sessionId, stats);
+                updateBattleRooms(sessionId);
                 return room;
             }
         }
@@ -71,14 +83,13 @@ public class BattleService {
         BattleRoom newRoom = BattleRoom.builder()
                 .totalTurn(10) // 예시 값
                 .battleRoomId(newRoomId)
-                .sessionIdA(sessionId)
+                .sessionIdA(null)
                 .sessionIdB(null) // 초기에는 B 세션 없음
-                .statsA(stats) // stats 초기화
+                .statsA(null) // stats 초기화
                 .statsB(null) // 초기에는 B stats 없음
                 .build();
 
         battleRooms.put(newRoomId, newRoom);
-        updateBattleRooms();
         return newRoom;
     }
 
@@ -125,9 +136,7 @@ public class BattleService {
                     damageB = 0;
                 }
             }
-
             nextAttacker = "B";
-
         } else {
             // B 공격
 
@@ -169,6 +178,7 @@ public class BattleService {
                 .damageB(damageB)
                 .build();
     }
+
     private boolean isStay(BattleLog battleLog) {
         if (battleLog.getSelectA().equals(FightType.STAY) || battleLog.getSelectB()
                 .equals(FightType.STAY)) {
@@ -177,12 +187,14 @@ public class BattleService {
             return false;
         }
     }
+
     private Integer attack(MongStats attackMong, MongStats defenceMong) {
         //TODO:공격력 로직.. 추후 수정 필요
         Integer power = 100 + attackMong.getStrength();
         Integer defense = 100 + defenceMong.getDefense();
         return power * 100 / defense;
     }
+
     private boolean isSameDirection(BattleLog battleLog) {
         if (battleLog.getSelectA().equals(battleLog.getSelectB())) {
             return true;
@@ -190,6 +202,7 @@ public class BattleService {
             return false;
         }
     }
+
     public void keepWin(Long mongId) {
         log.info("keepWin Call : mongId - {}", mongId);
         // point history 에 0원이라고 기록
@@ -201,12 +214,15 @@ public class BattleService {
 //        memberServiceClient.addPoint(String.valueOf(findMongMasterResDto.getMemberId()),
 //                addPointReqDto);
     }
-    public void getWin(Long mongId){
+
+    public void getWin(Long mongId) {
         log.info("getWin Call : mongId - {}", mongId);
     }
-    public void getLose(Long mongId){
+
+    public void getLose(Long mongId) {
         log.info("getLose Call : mongId - {}", mongId);
     }
+
     public <T> void sendMessage(String userSessionId, String destination, T message, SimpMessagingTemplate messagingTemplate) {
         //destination은 메세지를 보낼 목적지
         try {
