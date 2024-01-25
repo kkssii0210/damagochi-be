@@ -52,7 +52,7 @@ public class MongController {
         System.out.println("resDto = " + resDto);
         BattleMessageResDto rrr = battleService.attack(resDto);
         System.out.println("rrr = " + rrr);
-        simpMessagingTemplate.convertAndSend("/topic/battleRooms/page/"+ resDto.getBattleRoomId(), rrr);
+        simpMessagingTemplate.convertAndSend("/topic/battleRooms/"+ resDto.getBattleRoomId(), rrr);
 
         return rrr;
     }

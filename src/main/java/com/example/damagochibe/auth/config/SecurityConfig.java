@@ -73,7 +73,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("*")); // 모든 출처 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // 허용할 HTTP 메소드
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
-        configuration.setAllowCredentials(true); // 쿠키 허용
+//        configuration.setAllowCredentials(true); // 쿠키 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 적용
