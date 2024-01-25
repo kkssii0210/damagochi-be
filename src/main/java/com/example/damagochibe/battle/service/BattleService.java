@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -221,9 +220,52 @@ public class BattleService {
     public BattleMessageResDto attack(BattleMessageResDto resDto) {
         Optional<Mong> mongA = mongInfoRepo.findById(resDto.getMongAId());
         Optional<Mong> mongB = mongInfoRepo.findById(resDto.getMongBId());
+
+        int damege = mongA.get().getStrength() * mongA.get().getAgility() / mongB.get().getDefense();
+        double randomValue = 0.9 + (Math.random() * 0.2);
+
+        if (mongA.get().getAttribute().equals("불")) {
+            if (mongB.get().getAttribute().equals("풀")) {
+                damege = (int) (damege * 1.2);
+            } else if (mongB.get().getAttribute().equals("물")) {
+                damege = (int) (damege * 0.8);
+            }
+        }
+
+        if (mongA.get().getAttribute().equals("물")) {
+            if (mongB.get().getAttribute().equals("불")) {
+                damege = (int) (damege * 1.2);
+            } else if (mongB.get().getAttribute().equals("풀")) {
+                damege = (int) (damege * 0.8);
+            }
+        }
+
+        if (mongA.get().getAttribute().equals("풀")) {
+            if (mongB.get().getAttribute().equals("물")) {
+                damege = (int) (damege * 1.2);
+            } else if (mongB.get().getAttribute().equals("불")) {
+                damege = (int) (damege * 0.8);
+            }
+        }
+
+        if (mongA.get().getAttribute().equals("빛")) {
+            if (mongB.get().getAttribute().equals("암")) {
+                damege = (int) (damege * 1.2);
+            }
+        }
+
+        if (mongA.get().getAttribute().equals("암")) {
+            if (mongB.get().getAttribute().equals("빛")) {
+                damege = (int) (damege * 1.2);
+            }
+        }
+
+        int finalDamege = (int) (damege * randomValue);
+
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
-        resDto.setHealthB(resDto.getHealthB() - 10);
+        resDto.setHealthB(resDto.getHealthB() - finalDamege);
+        System.out.println("finalDamege = " + finalDamege);
         return resDto;
     }
 }
