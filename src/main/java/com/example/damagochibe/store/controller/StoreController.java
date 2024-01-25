@@ -4,8 +4,6 @@ import com.example.damagochibe.Item.food.entity.Food;
 import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
 import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
 import com.example.damagochibe.auth.config.AuthConfig;
-import com.example.damagochibe.cart.dto.CartReqDto;
-import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.store.dto.DeleteReqDto;
 import com.example.damagochibe.store.dto.StoreDto;
@@ -23,7 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -166,15 +163,27 @@ public class StoreController {
         return itemViewById(storeId, pageable);
     }
 
-    @PutMapping("/item/edit/id/{storeId}")
-    public void updateItem(@PathVariable Long storeId, @RequestBody StoreDto storeDto) {
+    @PostMapping("/item/edit/id/{storeId}")
+    public void updateItem(@PathVariable Long storeId,
+                           StoreDto storeDto,
+                           @RequestParam(value = "itemFiles", required = false) MultipartFile[] itemFiles) {
         System.out.println("storeId = " + storeId);
         System.out.println("store.getStoreId() = " + storeDto.getStoreId());
         System.out.println("store.getItemName() = " + storeDto.getItemName());
         System.out.println("storeDto.getItemCategory() = " + storeDto.getItemCategory());
         System.out.println("store.getItemFunction() = " + storeDto.getItemFunction());
         System.out.println("store.getItemPrice() = " + storeDto.getItemPrice());
+        System.out.println("storeDto.getItemFiles() = " + storeDto.getItemFiles());
         storeService.itemEdit(storeId, storeDto);
     }
+
+    // 아이템 편집 시, 기존 이미지파일 삭제
+    @DeleteMapping("/deleteFile/{fileId}")
+    public void deleteFile(@PathVariable Long fileId) {
+        // fileId 통해 itemFileRepository에서 찾고, 삭제
+            storeService.deleteFile(fileId);
+    }
+
+
 
 }

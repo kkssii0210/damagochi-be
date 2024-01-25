@@ -296,15 +296,21 @@ public class StoreService {
         Optional<LiquidMedicine> liquidMedicineContent = liquidMedicineRepository.findById(storeId);
         Optional<Mymap> mapContent = mymapRepository.findById(storeId);
 
+        // 카테고리랑
+        List<ItemFile> itemFiles = itemFileRepository.findByStoreIdAndCategory(storeId, storeDto.getItemCategory());
+
+        //파일 아이디로 찾기
+
         if (foodContent.isPresent()) {
             Food food = foodContent.get();
             food.setFoodName(storeDto.getItemName());
             food.setCategory(storeDto.getItemCategory());
             food.setFoodFunction(storeDto.getItemFunction());
             food.setFoodPrice(storeDto.getItemPrice());
+            food.setFileUrl(storeDto.getItemFiles().toString());
+            System.out.println("food.setFileUrl(); = " + food.getFileUrl());
 
             foodRepository.save(food); // 저장되는 곳은 푸드
-
         } else if (liquidMedicineContent.isPresent()) {
             LiquidMedicine medicine = liquidMedicineContent.get();
             medicine.setLiquidMedicineName(storeDto.getItemName());
@@ -323,5 +329,10 @@ public class StoreService {
 
             mymapRepository.save(map);
         }
+    }
+
+    // 수정 시 기존의 아이템 파일 삭제
+    public void deleteFile(Long fileId) {
+        itemFileRepository.deleteById(fileId);
     }
 }
