@@ -1,11 +1,15 @@
 package com.example.damagochibe.itemFile.entity;
 
 
+import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
+import com.example.damagochibe.itemFile.dto.ItemFileDto;
 import com.example.damagochibe.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -24,9 +28,4 @@ public class ItemFile {
     private String fileName;
     private String fileUrl;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "storeId")
-//    @JsonBackReference
-//    @JsonIgnore
-//    private Store store;
 }

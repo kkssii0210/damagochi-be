@@ -129,6 +129,7 @@ public class StoreController {
             combinedStore.setItemCategory(food.getCategory());
             combinedStore.setItemFunction(food.getFoodFunction());
             combinedStore.setItemPrice(food.getFoodPrice());
+            combinedStore.setItemFiles(food.getFileUrl());
         }
 
         if (liquidMedicine != null) {

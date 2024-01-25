@@ -12,4 +12,5 @@ public class FoodDto {
     private String foodName;
     private String foodFunction;
     private Integer foodPrice;
+    private String fileUrl;
 }

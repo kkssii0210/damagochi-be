@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Builder
@@ -16,4 +18,5 @@ public class ItemFileDto {
     private String category;
     private String fileName;
     private String fileUrl;
+    private List<ItemFileDto> itemFiles;
 }

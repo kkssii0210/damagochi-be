@@ -55,7 +55,7 @@ public class StoreService {
     private void upload(Long storeId, String category, MultipartFile file) {
 
         try {
-            String key = "damagochi/" + storeId + "/"+ category + "/" + file.getOriginalFilename();
+            String key = "damagochi/" + storeId + "/" + category + "/" + file.getOriginalFilename();
 
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -81,6 +81,7 @@ public class StoreService {
                 itemFile.setStoreId(savedFood.getFoodId());
                 itemFile.setCategory(savedFood.getCategory());
                 itemFile.setFileName(file.getOriginalFilename());
+                itemFile.setFileUrl(registerFileUrl(savedFood.getFoodId(), savedFood.getCategory(), file.getOriginalFilename()));
                 itemFileRepository.save(itemFile);
 
                 upload(itemFile.getStoreId(), food.getCategory(), file);
@@ -99,6 +100,7 @@ public class StoreService {
                 itemFile.setStoreId(savedMedicine.getLiquidMedicineId());
                 itemFile.setCategory(savedMedicine.getCategory());
                 itemFile.setFileName(file.getOriginalFilename());
+                itemFile.setFileUrl(registerFileUrl(savedMedicine.getLiquidMedicineId(), savedMedicine.getCategory(), file.getOriginalFilename()));
                 itemFileRepository.save(itemFile);
 
                 upload(itemFile.getStoreId(), itemFile.getCategory(), file);
@@ -117,11 +119,25 @@ public class StoreService {
                 itemFile.setStoreId(savedMap.getMymapId());
                 itemFile.setCategory(savedMap.getCategory());
                 itemFile.setFileName(file.getOriginalFilename());
+
+                // itemFile리포지토리에 fileUrl을 넣어야함
+                // itemFile을 List형태로 바꿔야함
+                itemFile.setFileUrl(registerFileUrl(savedMap.getMymapId(), savedMap.getCategory(), file.getOriginalFilename()));
                 itemFileRepository.save(itemFile);
 
                 upload(itemFile.getStoreId(), itemFile.getCategory(), file);
             }
         }
+    }
+
+    // 등록시 fileUrl 넣기
+    private List<String> registerFileUrl(Long storeId, String category, String fileName) {
+//        String url = imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
+
+        List<String> urls = fileName.stream()
+                .map(fileName -> imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName)
+                .collect(Collectors.toList());
+        return urls;
     }
 
 
@@ -153,13 +169,15 @@ public class StoreService {
         // https://study0210.s3.ap-northeast-2.amazonaws.com/damagochi/24/liquidMedicine/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202024-01-18%20123606.png
 
         List<ItemFileDto> result = itemFiles.stream().map(e -> ItemFileDto.builder()
-                .id(e.getId())
-                .fileName(e.getFileName())
+                        .id(e.getId())
+                        .fileName(e.getFileName())
 //                .storeId(e.getStoreId())
 //                .category(e.getCategory())
-                .fileUrl(imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + e.getFileName())
-                .build())
+                        .fileUrl(imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + e.getFileName())
+                        .build())
                 .toList();
+        //등록할떄  아이템파일 리포지토리의 url에 저장해야함
+
 
         return result;
     }
@@ -189,25 +207,32 @@ public class StoreService {
         System.out.println("mapList.getContent() = " + mapList.getContent());
         List<StoreDto> storeMapList = mapList.getContent().stream()
                 .filter(myMap -> !"MP000".equals(myMap.getMapCode()))
-                    .map(myMap -> StoreDto.builder()
-                            .storeId(myMap.getMymapId())
-                            .itemFunction(myMap.getMapFunction())
-                            .itemName(myMap.getMapName())
-                            .itemCategory(myMap.getCategory())
-                            .itemPrice(myMap.getMapPrice())
-                            .itemFiles(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
-                            .build())
-                    .collect(Collectors.toList());
+                .map(myMap -> StoreDto.builder()
+                        .storeId(myMap.getMymapId())
+                        .itemFunction(myMap.getMapFunction())
+                        .itemName(myMap.getMapName())
+                        .itemCategory(myMap.getCategory())
+                        .itemPrice(myMap.getMapPrice())
+                        .itemFiles(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
+                        .build())
+                .collect(Collectors.toList());
 
-            return new PageImpl<>(storeMapList, pageable, mapList.getTotalElements());
+        return new PageImpl<>(storeMapList, pageable, mapList.getTotalElements());
     }
 
     public Food foodViewById(Long foodId) {
         // 아이템 보기
         Optional<Food> foodView = foodRepository.findById(foodId);
+        Food food = foodView.get();
 
-        if (foodView.isPresent()) {
-            return foodView.get();
+        // 푸드 아이디와 푸드 카테고리로 fileUrl을 가져와야함
+        List<ItemFile> fileUrls = itemFileRepository.findByStoreIdAndCategory(food.getFoodId(), food.getCategory());
+        if (fileUrls != null) {
+            for( ItemFile fileUrl: fileUrls) {
+                food.setFileUrl(fileUrl.getFileUrl());
+                System.out.println("food.getFileUrl() = " + food.getFileUrl());
+            }
+            return food;
         }
         return null;
     }
