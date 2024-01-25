@@ -129,7 +129,7 @@ public class StoreController {
             combinedStore.setItemCategory(food.getCategory());
             combinedStore.setItemFunction(food.getFoodFunction());
             combinedStore.setItemPrice(food.getFoodPrice());
-            combinedStore.setItemFiles(food.getFileUrl());
+            combinedStore.setItemFiles(storeService.getItemFileUrls(food.getFoodId(), food.getCategory()));
         }
 
         if (liquidMedicine != null) {
@@ -138,6 +138,7 @@ public class StoreController {
             combinedStore.setItemCategory(liquidMedicine.getCategory());
             combinedStore.setItemFunction(liquidMedicine.getLiquidMedicineFunction());
             combinedStore.setItemPrice(liquidMedicine.getLiquidMedicinePrice());
+            combinedStore.setItemFiles(storeService.getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()));
         }
 
         if (map != null) {
@@ -146,6 +147,7 @@ public class StoreController {
             combinedStore.setItemCategory(map.getCategory());
             combinedStore.setItemFunction(map.getMapFunction());
             combinedStore.setItemPrice(map.getMapPrice());
+            combinedStore.setItemFiles(storeService.getItemFileUrls(map.getMymapId(), map.getCategory()));
         }
 
         return combinedStore;

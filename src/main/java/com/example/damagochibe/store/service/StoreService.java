@@ -130,14 +130,9 @@ public class StoreService {
         }
     }
 
-    // 등록시 fileUrl 넣기
-    private List<String> registerFileUrl(Long storeId, String category, String fileName) {
-//        String url = imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
-
-        List<String> urls = fileName.stream()
-                .map(fileName -> imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName)
-                .collect(Collectors.toList());
-        return urls;
+    // 등록시 fileUrl 넣기 -> url 하나만 들어가서 안 됨
+    private String registerFileUrl(Long storeId, String category, String fileName) {
+        return imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
     }
 
 
@@ -162,7 +157,7 @@ public class StoreService {
 
     }
 
-    private List<ItemFileDto> getItemFileUrls(Long storeId, String category) {
+    public List<ItemFileDto> getItemFileUrls(Long storeId, String category) {
 
         List<ItemFile> itemFiles = itemFileRepository.findByStoreIdAndCategory(storeId, category);
 
@@ -223,16 +218,18 @@ public class StoreService {
     public Food foodViewById(Long foodId) {
         // 아이템 보기
         Optional<Food> foodView = foodRepository.findById(foodId);
-        Food food = foodView.get();
 
         // 푸드 아이디와 푸드 카테고리로 fileUrl을 가져와야함
-        List<ItemFile> fileUrls = itemFileRepository.findByStoreIdAndCategory(food.getFoodId(), food.getCategory());
-        if (fileUrls != null) {
-            for( ItemFile fileUrl: fileUrls) {
-                food.setFileUrl(fileUrl.getFileUrl());
-                System.out.println("food.getFileUrl() = " + food.getFileUrl());
+        if (foodView.isPresent()) {
+            Food food = foodView.get();
+            List<ItemFile> fileUrls = itemFileRepository.findByStoreIdAndCategory(food.getFoodId(), food.getCategory());
+            if (fileUrls != null) {
+                for (ItemFile fileUrl : fileUrls) {
+                    food.setFileUrl(fileUrl.getFileUrl());
+                    System.out.println("food.getFileUrl() = " + food.getFileUrl());
+                }
+                return food;
             }
-            return food;
         }
         return null;
     }
@@ -241,7 +238,14 @@ public class StoreService {
         Optional<LiquidMedicine> liquidMedicineView = liquidMedicineRepository.findById(liquidMedicineId);
 
         if (liquidMedicineView.isPresent()) {
-            return liquidMedicineView.get();
+            LiquidMedicine liquidMedicine = liquidMedicineView.get();
+            List<ItemFile> fileUrls = itemFileRepository.findByStoreIdAndCategory(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory());
+            if (fileUrls != null) {
+                for (ItemFile fileUrl : fileUrls) {
+                    liquidMedicine.setFileUrl(fileUrl.getFileUrl());
+                }
+                return liquidMedicine;
+            }
         }
         return null;
     }
@@ -249,8 +253,17 @@ public class StoreService {
     public Mymap mapViewById(Long mapId) {
         Optional<Mymap> mapView = mymapRepository.findById(mapId);
 
+        // 푸드 아이디와 푸드 카테고리로 fileUrl을 가져와야함
         if (mapView.isPresent()) {
-            return mapView.get();
+
+            Mymap map = mapView.get();
+            List<ItemFile> fileUrls = itemFileRepository.findByStoreIdAndCategory(map.getMymapId(), map.getCategory());
+            if (fileUrls != null) {
+                for (ItemFile fileUrl : fileUrls) {
+                    map.setFileUrl(fileUrl.getFileUrl());
+                }
+                return map;
+            }
         }
         return null;
     }
