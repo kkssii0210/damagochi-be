@@ -9,6 +9,8 @@ public class BattleMessageResDto {
     private Integer battleRoomId;
     private String mongCodeA;
     private String mongCodeB;
+    private Long mongAId;
+    private Long mongBId;
     private Integer nowTurn;
     private Integer totalTurn;
     private String nextAttacker;
@@ -17,4 +19,5 @@ public class BattleMessageResDto {
     private Integer damageB;
     private Integer healthA;
     private Integer healthB;
+    private String turn;
 }

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface MongRepository extends JpaRepository<Mong, Long> {
     Mong findByMemberId(String memberId);
 
+
 }
