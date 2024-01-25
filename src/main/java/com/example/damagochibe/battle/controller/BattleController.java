@@ -1,6 +1,5 @@
 package com.example.damagochibe.battle.controller;
 import com.example.damagochibe.auth.config.AuthConfig;
-import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
 import com.example.damagochibe.battle.service.BattleService;
 import com.example.damagochibe.battle.vo.BattleRoom;
 import com.example.damagochibe.member.entity.Member;
@@ -39,6 +38,11 @@ public class BattleController {
         Long mongId = mongInfoRepo.findMongByPlayerId(memberId);
         log.info("mongId!!! : " + mongId);
         BattleRoom battleRoom = battleService.joinOrCreateRoom(sessionId,mongId);
+        // 클라이언트에게 방 ID를 먼저 전송
+        messagingTemplate.convertAndSend(
+                "/queue/battleRoomInfo", // 사용자별로 대기열을 설정
+                battleRoom.getBattleRoomId()
+        );
 //        BattleMessageResDto response = BattleMessageResDto.builder()
 //                .battleRoomId(battleRoom.getBattleRoomId())
 //                .build();

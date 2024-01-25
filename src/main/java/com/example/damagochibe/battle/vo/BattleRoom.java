@@ -159,4 +159,14 @@ public class BattleRoom {
             throw new IllegalStateException("BattleRoom is already full");
         }
     }
+    public void removeSession(String sessionId) {
+        if (sessionIds.get("A").equals(sessionId)) {
+            sessionIds.put("A", null);
+            statsMap.put("A",null);
+        } else if (sessionIds.get("B").equals(sessionId)) {
+            sessionIds.put("B", null);
+            statsMap.put("B",null);
+        }
+        log.info("Session removed: " + sessionId);
+    }
 }

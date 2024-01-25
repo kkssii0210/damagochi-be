@@ -6,8 +6,13 @@ import com.example.damagochibe.member.repository.MemberRepository;
 import com.example.damagochibe.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Component
@@ -30,5 +35,7 @@ public class AuthConfig {
         Optional<Member> byMemberId = memberRepository.findByMemberId(memberIdByAccessToken);
         return byMemberId.orElse(null);
     }
+
+
 }
 
