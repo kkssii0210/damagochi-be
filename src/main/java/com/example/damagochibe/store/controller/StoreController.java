@@ -167,13 +167,14 @@ public class StoreController {
     public void updateItem(@PathVariable Long storeId,
                            StoreDto storeDto,
                            @RequestParam(value = "itemFiles", required = false) MultipartFile[] itemFiles) {
+
         System.out.println("storeId = " + storeId);
         System.out.println("store.getStoreId() = " + storeDto.getStoreId());
         System.out.println("store.getItemName() = " + storeDto.getItemName());
         System.out.println("storeDto.getItemCategory() = " + storeDto.getItemCategory());
         System.out.println("store.getItemFunction() = " + storeDto.getItemFunction());
         System.out.println("store.getItemPrice() = " + storeDto.getItemPrice());
-        System.out.println("storeDto.getItemFiles() = " + storeDto.getItemFiles());
+        System.out.println("itemFiles = " + itemFiles);
         storeService.itemEdit(storeId, storeDto);
     }
 
