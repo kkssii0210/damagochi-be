@@ -24,6 +24,8 @@
         public void registerStompEndpoints(StompEndpointRegistry registry) {
                 registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5000")
                     .withSockJS();
+            registry.addEndpoint("/ma").setAllowedOrigins("http://localhost:5000")
+                    .withSockJS();
                 registry.addEndpoint("/battle").setAllowedOrigins("http://localhost:5000").withSockJS();
         }
 
