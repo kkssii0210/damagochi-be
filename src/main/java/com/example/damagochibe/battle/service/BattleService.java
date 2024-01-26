@@ -42,13 +42,30 @@ public class BattleService {
         }
         return null;
     }
+    // battleRoomId로 BattleRoom을 찾고 없으면 예외를 던지는 메소드
+//    public BattleRoom findBattleRoomByIdOrThrow(Integer battleRoomId) {
+//        BattleRoom battleRoom = battleRooms.get(battleRoomId);
+//        if (battleRoom == null) {
+//            throw new IllegalArgumentException("BattleRoom with ID " + battleRoomId + " not found.");
+//        }
+//        return battleRoom;
+//    }
 
     public void updateBattleRooms(String sessionId) {
         BattleRoom room = findBattleRoomBySessionId(sessionId);
+
+        BattleMessageResDto battleMessageResDto = BattleMessageResDto.builder()
+                .battleRoomId(room.getBattleRoomId())
+                .mongAId(room.getStatsMap().get("A") != null ? room.getStatsMap().get("A").getMongId() : null)
+                .mongBId(room.getStatsMap().get("B") != null ? room.getStatsMap().get("B").getMongId() : null)
+                .nowTurn(room.getNowTurn())
+                .totalTurn(room.getTotalTurn())
+                .sessionIds(room.getSessionIds())
+                .build();
         log.info("보낼 세션!!! " + sessionId);
         messagingTemplate.convertAndSend(
                 "/topic/battleRoom/" + room.getBattleRoomId(),
-                room // 현재 방의 상태 데이터
+                battleMessageResDto // 현재 방의 상태 데이터
         );
         log.info("Updated battle rooms sent to respective participants");
     }
@@ -236,6 +253,7 @@ public class BattleService {
     public BattleMessageResDto attack(BattleMessageResDto resDto) {
         Optional<Mong> mongA = mongInfoRepo.findById(resDto.getMongAId());
         Optional<Mong> mongB = mongInfoRepo.findById(resDto.getMongBId());
+
 
         int damege = mongA.get().getStrength() * mongA.get().getAgility() / mongB.get().getDefense();
         double randomValue = 0.9 + (Math.random() * 0.2);
