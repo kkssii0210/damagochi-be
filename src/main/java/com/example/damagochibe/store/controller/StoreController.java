@@ -166,7 +166,7 @@ public class StoreController {
     @PostMapping("/item/edit/id/{storeId}")
     public void updateItem(@PathVariable Long storeId,
                            StoreDto storeDto,
-                           @RequestParam(value = "itemFiles", required = false) MultipartFile[] itemFiles) {
+                           @RequestParam(value = "newItemFiles", required = false) MultipartFile[] itemFiles) {
 
         System.out.println("storeId = " + storeId);
         System.out.println("store.getStoreId() = " + storeDto.getStoreId());
@@ -175,6 +175,12 @@ public class StoreController {
         System.out.println("store.getItemFunction() = " + storeDto.getItemFunction());
         System.out.println("store.getItemPrice() = " + storeDto.getItemPrice());
         System.out.println("itemFiles = " + itemFiles);
+        if (itemFiles != null) {
+            for (MultipartFile file : itemFiles) {
+                System.out.println("file.getOriginalFilename() = " + file.getOriginalFilename());
+                System.out.println("file.getSize() = " + file.getSize());
+            }
+        }
         storeService.itemEdit(storeId, storeDto);
     }
 
