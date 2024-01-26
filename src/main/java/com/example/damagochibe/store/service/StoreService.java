@@ -305,18 +305,13 @@ public class StoreService {
                     .fileUrl(url)
                     .build();
             itemFileRepository.save(newFile);
-
+            // 저장 후 업로드해야 올라감
             upload(storeId, category, updateFile);
-
         }
 
         Optional<Food> foodContent = foodRepository.findById(storeId);
         Optional<LiquidMedicine> liquidMedicineContent = liquidMedicineRepository.findById(storeId);
         Optional<Mymap> mapContent = mymapRepository.findById(storeId);
-
-        // 카테고리랑 id로 아이템파일 정보찾기
-        List<ItemFile> files = itemFileRepository.findByStoreIdAndCategory(storeId, storeDto.getItemCategory());
-        // files안에 있는 String 타입의 url을 food의 fileUrl에 넣어야함
 
         if (foodContent.isPresent()) {
             Food food = foodContent.get();
@@ -324,16 +319,7 @@ public class StoreService {
             food.setCategory(storeDto.getItemCategory());
             food.setFoodFunction(storeDto.getItemFunction());
             food.setFoodPrice(storeDto.getItemPrice());
-            // food에 fileUrl을 넣기
-            for (ItemFile file : files) {
-                String fileUrl = file.getFileUrl();
-                System.out.println("fileUrl = " + fileUrl);
 
-                // 기존에 있는 파일의 url이 새로운걸로 변경됨. 기존파일은 두고 새로운 파일의 url만 추가해야함
-                food.setFileUrl(fileUrl);
-            }
-
-            System.out.println("food.setFileUrl(); = " + food.getFileUrl());
             foodRepository.save(food); // 저장되는 곳은 푸드
         } else if (liquidMedicineContent.isPresent()) {
             LiquidMedicine medicine = liquidMedicineContent.get();
@@ -343,7 +329,6 @@ public class StoreService {
             medicine.setLiquidMedicinePrice(storeDto.getItemPrice());
 
             liquidMedicineRepository.save(medicine);
-
         } else if (mapContent.isPresent()) {
             Mymap map = mapContent.get();
             map.setMapName(storeDto.getItemName());
