@@ -290,16 +290,30 @@ public class StoreService {
     }
 
     // 아이템 수정
-    public void itemEdit(Long storeId, StoreDto storeDto) {
+    public void itemEdit(Long storeId, StoreDto storeDto, MultipartFile[] updateFiles) {
+
+        // itemFile DB에 새로 저장한 파일의 url 저장
+        for (MultipartFile updateFile : updateFiles) {
+            String category = storeDto.getItemCategory();
+            String fileName = updateFile.getOriginalFilename();
+            String url = imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
+
+            ItemFile newFile = ItemFile.builder()
+                    .storeId(storeId)
+                    .category(category)
+                    .fileName(fileName)
+                    .fileUrl(url)
+                    .build();
+            itemFileRepository.save(newFile);
+        }
 
         Optional<Food> foodContent = foodRepository.findById(storeId);
         Optional<LiquidMedicine> liquidMedicineContent = liquidMedicineRepository.findById(storeId);
         Optional<Mymap> mapContent = mymapRepository.findById(storeId);
 
-        // 카테고리랑
-        List<ItemFile> itemFiles = itemFileRepository.findByStoreIdAndCategory(storeId, storeDto.getItemCategory());
-
-        //파일 아이디로 찾기
+        // 카테고리랑 id로 아이템파일 정보찾기
+        List<ItemFile> files = itemFileRepository.findByStoreIdAndCategory(storeId, storeDto.getItemCategory());
+        // files안에 있는 String 타입의 url을 food의 fileUrl에 넣어야함
 
         if (foodContent.isPresent()) {
             Food food = foodContent.get();
@@ -307,9 +321,16 @@ public class StoreService {
             food.setCategory(storeDto.getItemCategory());
             food.setFoodFunction(storeDto.getItemFunction());
             food.setFoodPrice(storeDto.getItemPrice());
-            food.setFileUrl(storeDto.getItemFiles().toString());
-            System.out.println("food.setFileUrl(); = " + food.getFileUrl());
+            // food에 fileUrl을 넣기
+            for (ItemFile file : files) {
+                String fileUrl = file.getFileUrl();
+                System.out.println("fileUrl = " + fileUrl);
 
+                // 기존에 있는 파일의 url이 새로운걸로 변경됨. 기존파일은 두고 새로운 파일의 url만 추가해야함
+                food.setFileUrl(fileUrl);
+            }
+
+            System.out.println("food.setFileUrl(); = " + food.getFileUrl());
             foodRepository.save(food); // 저장되는 곳은 푸드
         } else if (liquidMedicineContent.isPresent()) {
             LiquidMedicine medicine = liquidMedicineContent.get();

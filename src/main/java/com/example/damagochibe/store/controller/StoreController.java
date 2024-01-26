@@ -166,7 +166,7 @@ public class StoreController {
     @PostMapping("/item/edit/id/{storeId}")
     public void updateItem(@PathVariable Long storeId,
                            StoreDto storeDto,
-                           @RequestParam(value = "newItemFiles", required = false) MultipartFile[] itemFiles) {
+                           @RequestParam(value = "newItemFiles", required = false) MultipartFile[] updateFiles) {
 
         System.out.println("storeId = " + storeId);
         System.out.println("store.getStoreId() = " + storeDto.getStoreId());
@@ -174,14 +174,13 @@ public class StoreController {
         System.out.println("storeDto.getItemCategory() = " + storeDto.getItemCategory());
         System.out.println("store.getItemFunction() = " + storeDto.getItemFunction());
         System.out.println("store.getItemPrice() = " + storeDto.getItemPrice());
-        System.out.println("itemFiles = " + itemFiles);
-        if (itemFiles != null) {
-            for (MultipartFile file : itemFiles) {
+        if (updateFiles != null) {
+            for (MultipartFile file : updateFiles) {
                 System.out.println("file.getOriginalFilename() = " + file.getOriginalFilename());
                 System.out.println("file.getSize() = " + file.getSize());
             }
         }
-        storeService.itemEdit(storeId, storeDto);
+        storeService.itemEdit(storeId, storeDto, updateFiles);
     }
 
     // 아이템 편집 시, 기존 이미지파일 삭제
