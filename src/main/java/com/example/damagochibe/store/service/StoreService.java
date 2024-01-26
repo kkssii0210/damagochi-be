@@ -305,6 +305,9 @@ public class StoreService {
                     .fileUrl(url)
                     .build();
             itemFileRepository.save(newFile);
+
+            upload(storeId, category, updateFile);
+
         }
 
         Optional<Food> foodContent = foodRepository.findById(storeId);
