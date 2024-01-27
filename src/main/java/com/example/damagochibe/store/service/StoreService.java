@@ -291,22 +291,25 @@ public class StoreService {
 
     // 아이템 수정
     public void itemEdit(Long storeId, StoreDto storeDto, MultipartFile[] updateFiles) {
-
+        
         // itemFile DB에 새로 저장한 파일의 url 저장
-        for (MultipartFile updateFile : updateFiles) {
-            String category = storeDto.getItemCategory();
-            String fileName = updateFile.getOriginalFilename();
-            String url = imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
+        if (updateFiles != null) {
+            for (MultipartFile updateFile : updateFiles) {
+                System.out.println("updateFile.getOriginalFilename() = " + updateFile.getOriginalFilename());
+                String category = storeDto.getItemCategory();
+                String fileName = updateFile.getOriginalFilename();
+                String url = imageUrlPrefix + "damagochi/" + storeId + "/" + category + "/" + fileName;
 
-            ItemFile newFile = ItemFile.builder()
-                    .storeId(storeId)
-                    .category(category)
-                    .fileName(fileName)
-                    .fileUrl(url)
-                    .build();
-            itemFileRepository.save(newFile);
-            // 저장 후 업로드해야 올라감
-            upload(storeId, category, updateFile);
+                ItemFile newFile = ItemFile.builder()
+                        .storeId(storeId)
+                        .category(category)
+                        .fileName(fileName)
+                        .fileUrl(url)
+                        .build();
+                itemFileRepository.save(newFile);
+                // 저장 후 업로드해야 올라감
+                upload(storeId, category, updateFile);
+            }
         }
 
         Optional<Food> foodContent = foodRepository.findById(storeId);

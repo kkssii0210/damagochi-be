@@ -24,6 +24,8 @@ public class StoreDto {
     private String itemFunction;
     @NotNull
     private Integer itemPrice;
+    @NotNull
+    private String itemCode;
 
     private List<ItemFileDto> itemFiles;
 }

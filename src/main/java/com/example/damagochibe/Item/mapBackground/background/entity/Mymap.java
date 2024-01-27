@@ -35,5 +35,6 @@ public class Mymap {
     private String category;
     private String mapFunction;
     private Integer mapPrice;
+    private Integer memberOwnedQuantity;
     private String fileUrl;
 }

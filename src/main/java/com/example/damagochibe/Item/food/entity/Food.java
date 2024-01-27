@@ -32,5 +32,6 @@ public class Food {
 
     private Long storeId;
     private Long memberId;
+    private Integer memberOwnedQuantity;
 
 }

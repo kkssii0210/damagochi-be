@@ -48,8 +48,9 @@ public class StoreController {
 
     @PostMapping("/item/register")
     public ResponseEntity<Object> register(@Validated StoreDto storeDto,
-                                           @RequestParam( value = "files[]", required = false) MultipartFile[] files) {
+                                           @RequestParam(value = "files[]", required = false) MultipartFile[] files) {
         System.out.println("storeDto = " + storeDto);
+        System.out.println("storeDto.getItemCode() = " + storeDto.getItemCode());
 
         Store store = new Store();
         if (storeDto.getItemCategory().equals("food")) {
@@ -69,8 +70,10 @@ public class StoreController {
                 .foodName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .foodFunction(storeDto.getItemFunction())
-                .foodPrice(storeDto.getItemPrice()).build();
+                .foodPrice(storeDto.getItemPrice())
+                .foodCode(storeDto.getItemCode()).build();
         System.out.println("food.getStoreId()=" + food.getStoreId());
+        System.out.println("food.getFoodCode() = " + food.getFoodCode());
         return food;
 
     }
@@ -81,7 +84,8 @@ public class StoreController {
                 .liquidMedicineName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .liquidMedicineFunction(storeDto.getItemFunction())
-                .liquidMedicinePrice(storeDto.getItemPrice()).build();
+                .liquidMedicinePrice(storeDto.getItemPrice())
+                .liquidMedicineCode(storeDto.getItemCode()).build();
 
         return liquidMedicine;
     }
@@ -92,7 +96,8 @@ public class StoreController {
                 .mapName(storeDto.getItemName())
                 .category(storeDto.getItemCategory())
                 .mapFunction(storeDto.getItemFunction())
-                .mapPrice(storeDto.getItemPrice()).build();
+                .mapPrice(storeDto.getItemPrice())
+                .mapCode(storeDto.getItemCode()).build();
 
         return map;
     }
@@ -187,9 +192,8 @@ public class StoreController {
     @DeleteMapping("/deleteFile/{fileId}")
     public void deleteFile(@PathVariable Long fileId) {
         // fileId 통해 itemFileRepository에서 찾고, 삭제
-            storeService.deleteFile(fileId);
+        storeService.deleteFile(fileId);
     }
-
 
 
 }

@@ -28,4 +28,6 @@ public class LiquidMedicine {
     private String fileUrl;
 
     private Long memberId;
+    private Integer memberOwnedQuantity;
+
 }
