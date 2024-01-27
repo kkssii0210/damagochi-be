@@ -21,4 +21,5 @@ public class BattleMessageResDto {
     private Integer healthB;
     private String turn;
     private Long itemId;
+    private Double attackBuff;
 }

@@ -280,7 +280,9 @@ public class BattleService {
             }
         }
 
-        int finalDamege = (int) (damege * randomValue);
+
+        int finalDamege = (int) ((damege * randomValue)*resDto.getAttackBuff());
+        resDto.setAttackBuff(1.0);
 
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
@@ -301,15 +303,28 @@ public class BattleService {
             inventoryRepository.save(myItem);
         }
 
-        if (myItem.getItemCode().equals("P001")) {
-            addHp = (int) (maxHp * 0.3);
-        } else if (myItem.getItemCode().equals("P002")) {
-            addHp = (int) (maxHp * 0.5);
-        } else if (myItem.getItemCode().equals("P003")) {
-            addHp = maxHp;
+        if (myItem.getItemCode().compareTo("P001") >= 0 && myItem.getItemCode().compareTo("P004") <= 0) {
+            if (myItem.getItemCode().equals("P001")) {
+                addHp = (int) (maxHp * 0.3);
+            } else if (myItem.getItemCode().equals("P002")) {
+                addHp = (int) (maxHp * 0.5);
+            } else if (myItem.getItemCode().equals("P003")) {
+                addHp = maxHp;
+            }
+
+            resDto.setHealthA(Math.min(resDto.getHealthA() + addHp, maxHp));
+            return resDto;
         }
 
-        resDto.setHealthA(Math.min(resDto.getHealthA() + addHp, maxHp));
-        return resDto;
+        else {
+            if (myItem.getItemCode().equals("P004")) {
+                resDto.setAttackBuff(1.3);
+            } else if (myItem.getItemCode().equals("P005")) {
+                resDto.setAttackBuff(1.5);
+            } else if (myItem.getItemCode().equals("P006")) {
+                resDto.setAttackBuff(2.0);
+            }
+            return resDto;
+        }
     }
 }
