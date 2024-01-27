@@ -20,4 +20,5 @@ public class BattleMessageResDto {
     private Integer healthA;
     private Integer healthB;
     private String turn;
+    private Long itemId;
 }
