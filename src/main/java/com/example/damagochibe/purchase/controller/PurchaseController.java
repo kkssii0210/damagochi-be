@@ -61,7 +61,7 @@ public class PurchaseController {
 
             // 멤버 포인트 변경
             purchaseService.changeMemberPoint(playerId, remainingPoint);
-            // 각 아이템 DB에 아이템을 소유한 member의 Id, 소유한 item quantity 저장
+            // 구매아이템 DB에 아이템을 소유한 member의 Id, 소유한 item quantity 저장
             purchaseService.savePurchaseInfoInItem(playerId, category, itemName, itemCount);
         }
 

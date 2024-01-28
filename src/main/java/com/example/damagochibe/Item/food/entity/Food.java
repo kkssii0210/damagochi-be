@@ -29,9 +29,6 @@ public class Food {
     private Integer foodPrice;
     private String foodCode;
     private String fileUrl;
-
     private Long storeId;
-    private Long memberId;
-    private Integer memberOwnedQuantity;
 
 }

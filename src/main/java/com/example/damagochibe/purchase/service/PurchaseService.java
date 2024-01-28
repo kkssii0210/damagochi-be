@@ -10,6 +10,9 @@ import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.repository.CartRepository;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.repository.MemberRepository;
+import com.example.damagochibe.purchase.dto.PurchaseDto;
+import com.example.damagochibe.purchase.dto.PurchasedListDto;
+import com.example.damagochibe.purchase.entity.Purchase;
 import com.example.damagochibe.purchase.repository.PurchaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +28,6 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
-    private final FoodRepository foodRepository;
-    private final LiquidMedicineRepository liquidMedicineRepository;
-    private final MymapRepository mymapRepository;
 
     // 멤버 정보 불러오기
     public void purchase(Long memberId) {
@@ -50,82 +50,34 @@ public class PurchaseService {
         }
     }
 
+    // 구매 내역 저장
     public void savePurchaseInfoInItem(String playerId, String category, String itemName, Integer itemCount) {
         System.out.println("서비스에 넘어가는지 확인 playerId = " + playerId);
         System.out.println("category = " + category);
         System.out.println("itemName = " + itemName);
         System.out.println("itemCount = " + itemCount);
 
+        // playerId로 memberId찾아서 purchase 리포지토리에 저장
         Long memberId = memberRepository.findMemberIdByPlayerId(playerId);
 
-        if (category.equals("food")) {
-            Food food = foodRepository.findByName(itemName);
+        // 만약 itemName, memberId로 찾았는데 이미 존재하면 item수량만 기존 수량에서 +
+        Optional<Purchase> presentInfo = purchaseRepository.findByMemberIdAndItemName(memberId, itemName);
+        if (presentInfo.isPresent()) {
+            Purchase info = presentInfo.get();
+            Integer oldCount = info.getOwnedItemCount();
+            int newCount = oldCount + itemCount;
+            info.setOwnedItemCount(newCount);
+            purchaseRepository.save(info);
 
-            if (food.getMemberId() == null) {
-                food.setMemberId(memberId);
-                food.setMemberOwnedQuantity(itemCount);
-                foodRepository.save(food);
-            } else {
-                Food newPurchaseInfo = Food.builder()
-                        .category(food.getCategory())
-                        .fileUrl(food.getFileUrl())
-                        .foodCode(food.getFoodCode())
-                        .foodFunction(food.getFoodFunction())
-                        .foodName(food.getFoodName())
-                        .foodPrice(food.getFoodPrice())
-                        .memberId(memberId)
-                        .memberOwnedQuantity(itemCount)
-                        .build();
-
-                foodRepository.save(newPurchaseInfo);
-            }
+        } else if (presentInfo.isEmpty()) {
+            Purchase items = Purchase.builder()
+                    .memberId(memberId)
+                    .category(category)
+                    .itemName(itemName)
+                    .ownedItemCount(itemCount)
+                    .build();
+            purchaseRepository.save(items);
         }
-
-        if (category.equals("liquidMedicine")) {
-            LiquidMedicine liquidMedicine = liquidMedicineRepository.findByName(itemName);
-
-            if (liquidMedicine.getMemberId() == null) {
-                liquidMedicine.setMemberId(memberId);
-                liquidMedicine.setMemberOwnedQuantity(itemCount);
-                liquidMedicineRepository.save(liquidMedicine);
-            } else {
-                LiquidMedicine newPurchaseInfo = LiquidMedicine.builder()
-                        .category(liquidMedicine.getCategory())
-                        .fileUrl(liquidMedicine.getFileUrl())
-                        .liquidMedicineCode(liquidMedicine.getLiquidMedicineCode())
-                        .liquidMedicineFunction(liquidMedicine.getLiquidMedicineFunction())
-                        .liquidMedicineName(liquidMedicine.getLiquidMedicineName())
-                        .liquidMedicinePrice(liquidMedicine.getLiquidMedicinePrice())
-                        .memberId(memberId)
-                        .memberOwnedQuantity(itemCount)
-                        .build();
-                liquidMedicineRepository.save(newPurchaseInfo);
-            }
-        }
-
-
-        if (category.equals("map")) {
-            Mymap map = mymapRepository.findByName(itemName);
-
-            if (map.getMemberId() == null) {
-                map.setMemberId(memberId);
-                map.setMemberOwnedQuantity(itemCount);
-                mymapRepository.save(map);
-            } else {
-                Mymap newPurchaseInfo = Mymap.builder()
-                        .category(map.getCategory())
-                        .fileUrl(map.getFileUrl())
-                        .mapCode(map.getMapCode())
-                        .mapFunction(map.getMapFunction())
-                        .mapName(map.getMapName())
-                        .mapPrice(map.getMapPrice())
-                        .memberId(memberId)
-                        .memberOwnedQuantity(itemCount)
-                        .build();
-                mymapRepository.save(newPurchaseInfo);
-            }
-
-        }
-
     }
+
 }
