@@ -59,28 +59,72 @@ public class PurchaseService {
         Long memberId = memberRepository.findMemberIdByPlayerId(playerId);
 
         if (category.equals("food")) {
-            // 구매한 아이템이 여러개인 경우, 여러개 저장되는지 봐야함
             Food food = foodRepository.findByName(itemName);
-            food.setMemberId(memberId);
-            food.setMemberOwnedQuantity(itemCount);
 
-            foodRepository.save(food);
+            if (food.getMemberId() == null) {
+                food.setMemberId(memberId);
+                food.setMemberOwnedQuantity(itemCount);
+                foodRepository.save(food);
+            } else {
+                Food newPurchaseInfo = Food.builder()
+                        .category(food.getCategory())
+                        .fileUrl(food.getFileUrl())
+                        .foodCode(food.getFoodCode())
+                        .foodFunction(food.getFoodFunction())
+                        .foodName(food.getFoodName())
+                        .foodPrice(food.getFoodPrice())
+                        .memberId(memberId)
+                        .memberOwnedQuantity(itemCount)
+                        .build();
+
+                foodRepository.save(newPurchaseInfo);
+            }
         }
 
         if (category.equals("liquidMedicine")) {
             LiquidMedicine liquidMedicine = liquidMedicineRepository.findByName(itemName);
-            liquidMedicine.setMemberId(memberId);
-            liquidMedicine.setMemberOwnedQuantity(itemCount);
 
-            liquidMedicineRepository.save(liquidMedicine);
+            if (liquidMedicine.getMemberId() == null) {
+                liquidMedicine.setMemberId(memberId);
+                liquidMedicine.setMemberOwnedQuantity(itemCount);
+                liquidMedicineRepository.save(liquidMedicine);
+            } else {
+                LiquidMedicine newPurchaseInfo = LiquidMedicine.builder()
+                        .category(liquidMedicine.getCategory())
+                        .fileUrl(liquidMedicine.getFileUrl())
+                        .liquidMedicineCode(liquidMedicine.getLiquidMedicineCode())
+                        .liquidMedicineFunction(liquidMedicine.getLiquidMedicineFunction())
+                        .liquidMedicineName(liquidMedicine.getLiquidMedicineName())
+                        .liquidMedicinePrice(liquidMedicine.getLiquidMedicinePrice())
+                        .memberId(memberId)
+                        .memberOwnedQuantity(itemCount)
+                        .build();
+                liquidMedicineRepository.save(newPurchaseInfo);
+            }
         }
+
 
         if (category.equals("map")) {
             Mymap map = mymapRepository.findByName(itemName);
-            map.setMemberId(memberId);
-            map.setMemberOwnedQuantity(itemCount);
 
-            mymapRepository.save(map);
+            if (map.getMemberId() == null) {
+                map.setMemberId(memberId);
+                map.setMemberOwnedQuantity(itemCount);
+                mymapRepository.save(map);
+            } else {
+                Mymap newPurchaseInfo = Mymap.builder()
+                        .category(map.getCategory())
+                        .fileUrl(map.getFileUrl())
+                        .mapCode(map.getMapCode())
+                        .mapFunction(map.getMapFunction())
+                        .mapName(map.getMapName())
+                        .mapPrice(map.getMapPrice())
+                        .memberId(memberId)
+                        .memberOwnedQuantity(itemCount)
+                        .build();
+                mymapRepository.save(newPurchaseInfo);
+            }
+
         }
 
     }
