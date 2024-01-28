@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class MongStats {
     private Long mongId;
+    private String name;
     private Integer strength; //근력
     private Integer agility; //민첩
     private Integer defense; //방어력

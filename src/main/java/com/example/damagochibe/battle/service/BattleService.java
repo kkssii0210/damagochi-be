@@ -42,18 +42,9 @@ public class BattleService {
         }
         return null;
     }
-    // battleRoomId로 BattleRoom을 찾고 없으면 예외를 던지는 메소드
-//    public BattleRoom findBattleRoomByIdOrThrow(Integer battleRoomId) {
-//        BattleRoom battleRoom = battleRooms.get(battleRoomId);
-//        if (battleRoom == null) {
-//            throw new IllegalArgumentException("BattleRoom with ID " + battleRoomId + " not found.");
-//        }
-//        return battleRoom;
-//    }
 
     public void updateBattleRooms(String sessionId) {
         BattleRoom room = findBattleRoomBySessionId(sessionId);
-
         BattleMessageResDto battleMessageResDto = BattleMessageResDto.builder()
                 .battleRoomId(room.getBattleRoomId())
                 .mongAId(room.getStatsMap().get("A") != null ? room.getStatsMap().get("A").getMongId() : null)
@@ -61,6 +52,9 @@ public class BattleService {
                 .nowTurn(room.getNowTurn())
                 .totalTurn(room.getTotalTurn())
                 .sessionIds(room.getSessionIds())
+                .turn(room.getStatsMap().get("A").getName())
+                .healthA(room.getStatsMap().get("A").getHealth())
+                .healthB(room.getStatsMap().get("B").getHealth())
                 .build();
         log.info("보낼 세션!!! " + sessionId);
         messagingTemplate.convertAndSend(
@@ -80,6 +74,7 @@ public class BattleService {
         // MongStats 인스턴스 생성 또는 조회
         MongStats stats = MongStats.builder()
                 .mongId(mongId)
+                .name(mong.getName())
                 .health(mong.getHealth())
                 .attribute(mong.getAttribute())
                 .defense(mong.getDefense())
