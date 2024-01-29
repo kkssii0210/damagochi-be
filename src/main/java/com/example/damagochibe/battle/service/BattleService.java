@@ -6,6 +6,9 @@ import com.example.damagochibe.battle.vo.BattleLog;
 import com.example.damagochibe.battle.vo.BattleLog.FightType;
 import com.example.damagochibe.battle.vo.BattleRoom;
 import com.example.damagochibe.battle.vo.MongStats;
+import com.example.damagochibe.inventory.enetity.Inventory;
+import com.example.damagochibe.inventory.repository.InventoryRepository;
+import com.example.damagochibe.management.mong.repository.MongRepository;
 import com.example.damagochibe.monginfo.entity.Mong;
 import com.example.damagochibe.monginfo.repository.MongInfoRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +31,8 @@ public class BattleService {
     private final AtomicInteger nextRoomId = new AtomicInteger(1);
     private final MongInfoRepo mongInfoRepo;
     private final SimpMessagingTemplate messagingTemplate;
+    private final InventoryRepository inventoryRepository;
+    private final MongRepository mongRepository;
 
     public List<BattleRoom> getBattleRooms() {
         return new ArrayList<>(battleRooms.values());
@@ -289,12 +293,51 @@ public class BattleService {
             }
         }
 
-        int finalDamege = (int) (damege * randomValue);
+
+        int finalDamege = (int) ((damege * randomValue)*resDto.getAttackBuff());
+        resDto.setAttackBuff(1.0);
 
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
         resDto.setHealthB(resDto.getHealthB() - finalDamege);
         System.out.println("finalDamege = " + finalDamege);
         return resDto;
+    }
+
+    public BattleMessageResDto useItem(BattleMessageResDto resDto, Long itemId) {
+        Inventory myItem = inventoryRepository.findById(itemId).get();
+        Mong myMong = mongRepository.findById(resDto.getMongAId()).get();
+        int maxHp = myMong.getHealth();
+        int addHp = 0;
+        if (myItem.getQuantity() == 1) {
+            inventoryRepository.delete(myItem);
+        } else if (myItem.getQuantity() >= 2) {
+            myItem.setQuantity(myItem.getQuantity() -1 );
+            inventoryRepository.save(myItem);
+        }
+
+        if (myItem.getItemCode().compareTo("P001") >= 0 && myItem.getItemCode().compareTo("P004") <= 0) {
+            if (myItem.getItemCode().equals("P001")) {
+                addHp = (int) (maxHp * 0.3);
+            } else if (myItem.getItemCode().equals("P002")) {
+                addHp = (int) (maxHp * 0.5);
+            } else if (myItem.getItemCode().equals("P003")) {
+                addHp = maxHp;
+            }
+
+            resDto.setHealthA(Math.min(resDto.getHealthA() + addHp, maxHp));
+            return resDto;
+        }
+
+        else {
+            if (myItem.getItemCode().equals("P004")) {
+                resDto.setAttackBuff(1.3);
+            } else if (myItem.getItemCode().equals("P005")) {
+                resDto.setAttackBuff(1.5);
+            } else if (myItem.getItemCode().equals("P006")) {
+                resDto.setAttackBuff(2.0);
+            }
+            return resDto;
+        }
     }
 }

@@ -22,6 +22,8 @@ public class BattleMessageResDto {
     private Integer healthA;
     private Integer healthB;
     private String turn;
+    private Long itemId;
+    private Double attackBuff;
     // 세션 ID를 위한 필드를 추가
     private Map<String, String> sessionIds;
 }
