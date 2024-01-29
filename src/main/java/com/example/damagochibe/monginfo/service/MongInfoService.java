@@ -43,10 +43,6 @@ public class MongInfoService {
         return mongInfoRepo.save(mong);
     }
 
-    public Mong findMongByMemberId(Long memberId) {
-        return mongInfoRepo.findMongByMemberId(memberId);
-    }
-
     public void deleteMong(Long id) {
         mongInfoRepo.deleteById(id);
     }

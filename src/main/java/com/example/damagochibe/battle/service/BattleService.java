@@ -296,7 +296,6 @@ public class BattleService {
 
         int finalDamege = (int) ((damege * randomValue)*resDto.getAttackBuff());
         resDto.setAttackBuff(1.0);
-
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
         resDto.setHealthB(resDto.getHealthB() - finalDamege);

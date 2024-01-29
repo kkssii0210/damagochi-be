@@ -12,8 +12,6 @@
     @Configuration
     @EnableWebSocketMessageBroker
     public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-
         @Override
         public void configureMessageBroker(MessageBrokerRegistry registry) {
             registry.enableSimpleBroker("/topic", "/queue"); // topic 모든 클라이언트, queue 특정 클라이언트

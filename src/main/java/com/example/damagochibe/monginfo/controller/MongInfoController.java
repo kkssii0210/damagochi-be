@@ -1,5 +1,6 @@
 package com.example.damagochibe.monginfo.controller;
 
+import com.example.damagochibe.auth.config.AuthConfig;
 import com.example.damagochibe.auth.dto.request.MemberAuthDto;
 import com.example.damagochibe.auth.security.CustomUserDetailService;
 import com.example.damagochibe.auth.security.TokenProvider;
@@ -7,6 +8,7 @@ import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.service.MemberService;
 import com.example.damagochibe.monginfo.dto.MongBattleDto;
 import com.example.damagochibe.monginfo.entity.Mong;
+import com.example.damagochibe.monginfo.repository.MongInfoRepo;
 import com.example.damagochibe.monginfo.service.MongInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +25,8 @@ import java.util.List;
 @RequestMapping("/api/monginfo")
 public class MongInfoController {
     private final MongInfoService mongInfoService;
-    private final TokenProvider tokenProvider;
-    private final CustomUserDetailService customUserDetailService;
-    private final MemberService memberService;
+    private final AuthConfig authConfig;
+    private final MongInfoRepo mongInfoRepo;
 
     @GetMapping
     public ResponseEntity<List<Mong>> getAllMongs() {
@@ -33,26 +34,18 @@ public class MongInfoController {
         return ResponseEntity.ok(mongs);
     }
 
-    @GetMapping("id")
-    public ResponseEntity<Mong> getMongById(@RequestHeader("Authorization") String accessToken) {
-        if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring(7);
+    @GetMapping("/id")
+    public ResponseEntity getMongById(@RequestHeader("Authorization") String accessToken) {
+        System.out.println("!!!! = "+accessToken);
+        accessToken = accessToken.substring(7);
+        Member member = authConfig.tokenValidationServiceV1(accessToken);
+        System.out.println("44444 = " +member.getMemberId());
+        Mong mongByMemberId = mongInfoRepo.findMongByMemberId(member.getPlayerId());
+        System.out.println("5555 = "+mongByMemberId.getId());
+        if (mongByMemberId != null) {
+            return ResponseEntity.ok(mongByMemberId);
         }
-        if (tokenProvider.validateToken(accessToken, customUserDetailService.loadUserByUsername(tokenProvider.getUsername(accessToken)))) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            MemberAuthDto dto = new MemberAuthDto(authentication.getName(), authentication.getAuthorities().stream().toList().get(0).toString());
-            String playerId = dto.getPlayerId();
-            Member byMemberPlayerId = memberService.findByMemberPlayerId(playerId);
-            Long memberId = byMemberPlayerId.getMemberId();
-            Mong mong = mongInfoService.findMongByMemberId(memberId);
-            if (mong == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(mong);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
