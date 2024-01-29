@@ -300,6 +300,7 @@ public class BattleService {
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
         resDto.setHealthB(resDto.getHealthB() - finalDamege);
+        resDto.setBattleLog(mongA.get().getName() + "이(가)" + mongB.get().getName() + "을(를) 공격 (데미지 " + finalDamege + ")");
         System.out.println("finalDamege = " + finalDamege);
         return resDto;
     }
@@ -308,6 +309,7 @@ public class BattleService {
         Inventory myItem = inventoryRepository.findById(itemId).get();
         Mong myMong = mongRepository.findById(resDto.getMongAId()).get();
         resDto.setTurn(myMong.getName());
+        resDto.setBattleLog(myMong.getName() + "이(가)" + myItem.getName() + "사용");
         int maxHp = myMong.getHealth();
         int addHp = 0;
         if (myItem.getQuantity() == 1) {
