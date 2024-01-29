@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,10 +64,12 @@ public class MongService1 {
         return ResponseEntity.badRequest().build();
     }
 
-    public Map<String, Object> getUser(String userName) {
+    public Map<String, Object> getUser(String userName, Long mongAId, Long mongBId) {
         Map<String, Object> map = new HashMap<>();
-        Mong userA = mongRepository.findByMemberId("hr@hr");
-        Mong userB = mongRepository.findByMemberId("hr2@hr");
+//        Mong userA = mongRepository.findByMemberId("hr@hr");
+//        Mong userB = mongRepository.findByMemberId("hr2@hr");
+        Optional<Mong> userA = mongRepository.findById(mongAId);
+        Optional<Mong> userB = mongRepository.findById(mongBId);
         map.put("userA", userA);
         map.put("userB", userB);
         map.put("userName", userName);

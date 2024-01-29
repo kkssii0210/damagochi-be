@@ -11,4 +11,6 @@ public interface MongInfoRepo extends JpaRepository<Mong, Long> {
     Mong findMongByMemberId(Long memberId);
     @Query("SELECT m.id FROM Mong m WHERE m.memberId = :memberId")
     Long findMongByMember(Long memberId);
+    @Query("SELECT m.id from Mong m WHERE m.memberId = :memberId")
+    Long findMongByPlayerId(String memberId);
 }

@@ -16,6 +16,8 @@ public class Purchase {
     private Long purchaseId;
 
     private Long memberId;
-    private Long paymentId;
-    private Integer itemPrice;
+    private String category;
+    private String itemName;
+    private String itemCode;
+    private Integer ownedItemCount;
 }

@@ -1,15 +1,17 @@
 package com.example.damagochibe.management.mong.controller;
 
 import com.example.damagochibe.auth.security.CustomUserDetail;
+import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
+import com.example.damagochibe.battle.service.BattleService;
 import com.example.damagochibe.management.mong.service.MongService1;
 import com.example.damagochibe.monginfo.entity.Mong;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +19,8 @@ import java.util.Optional;
 public class MongController {
 
     private final MongService1 mongService1;
+    private final BattleService battleService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping
     public Mong getInfo(@AuthenticationPrincipal CustomUserDetail principal) {
@@ -36,7 +40,28 @@ public class MongController {
     }
 
     @GetMapping("/getUser")
-    public Map<String, Object> getUser(@AuthenticationPrincipal CustomUserDetail principal) {
-        return mongService1.getUser(principal.getUsername());
+    public Map<String, Object> getUser(@AuthenticationPrincipal CustomUserDetail principal,
+                                       @RequestParam("userAMongId") Long userAMongId,
+                                       @RequestParam("userBMongId") Long userBMongId) {
+        return mongService1.getUser(principal.getUsername(), userAMongId, userBMongId);
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PutMapping
+    public BattleMessageResDto attack(@RequestBody BattleMessageResDto resDto) {
+        System.out.println("resDto = " + resDto);
+        BattleMessageResDto rrr = battleService.attack(resDto);
+        System.out.println("rrr = " + rrr);
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);
+        return rrr;
+    }
+
+    @CrossOrigin(origins = "http://localhost:5000")
+    @PutMapping("/useItem")
+    public BattleMessageResDto useItem(@RequestBody BattleMessageResDto resDto) {
+        System.out.println("resDto.getItemId() = " + resDto.getItemId());
+
+        BattleMessageResDto rrr = battleService.useItem(resDto, resDto.getItemId());
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);        return rrr;
     }
 }

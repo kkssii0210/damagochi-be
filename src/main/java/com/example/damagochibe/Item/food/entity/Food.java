@@ -1,10 +1,13 @@
 package com.example.damagochibe.Item.food.entity;
 
 
+import com.example.damagochibe.itemFile.entity.ItemFile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,8 +28,7 @@ public class Food {
     private String foodFunction;
     private Integer foodPrice;
     private String foodCode;
-
+    private String fileUrl;
     private Long storeId;
-    private Long memberId;
 
 }

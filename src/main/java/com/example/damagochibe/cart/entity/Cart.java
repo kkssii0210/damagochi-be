@@ -1,13 +1,12 @@
 package com.example.damagochibe.cart.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter @Setter
+@Builder
 @Entity
 @Table(schema = "damagochi")
 public class Cart {
@@ -16,8 +15,10 @@ public class Cart {
     private Long cartId;
 
     private String playerId;
+    private String cartItemCategory;
     private String cartItemName;
     private Integer cartItemPrice;
-    private Long itemCount;
+    private Integer cartItemCount;
+    private String cartItemCode;
 
 }

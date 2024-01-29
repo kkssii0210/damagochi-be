@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 public class WebSocketController {
-    @CrossOrigin(origins = "http://localhost:3000")
-
+    @CrossOrigin(origins = "http://localhost:5000")
     @MessageMapping("/management")
     @SendTo("/topic/management")
     public String notifyManagement(String message) {

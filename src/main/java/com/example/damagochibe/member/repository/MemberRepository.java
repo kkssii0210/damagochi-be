@@ -17,4 +17,7 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     Boolean checkSocialMemberByMemberId(Long memberId);
     @Query("SELECT m.playerId FROM Member m WHERE m.memberId = :memberId")
     String findPlayerIdByMemberId(Long memberId);
+
+    @Query("SELECT m.memberId FROM Member m WHERE m.playerId = :playerId")
+    Long findMemberIdByPlayerId(String playerId);
 }

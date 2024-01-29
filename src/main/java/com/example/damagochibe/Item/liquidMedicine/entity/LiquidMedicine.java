@@ -25,6 +25,5 @@ public class LiquidMedicine {
     private String liquidMedicineFunction;
     private Integer liquidMedicinePrice;
     private String liquidMedicineCode;
-
-    private Long memberId;
+    private String fileUrl;
 }

@@ -1,40 +1,77 @@
 package com.example.damagochibe.purchase.controller;
 
+import com.example.damagochibe.auth.config.AuthConfig;
 import com.example.damagochibe.auth.security.CustomUserDetailService;
-import com.example.damagochibe.auth.security.TokenProvider;
+import com.example.damagochibe.cart.entity.Cart;
+import com.example.damagochibe.member.entity.Member;
+import com.example.damagochibe.purchase.dto.PurchaseDto;
+import com.example.damagochibe.purchase.dto.PurchasedListDto;
 import com.example.damagochibe.purchase.service.PurchaseService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/purchase")
 public class PurchaseController {
     private final PurchaseService purchaseService;
-    private final TokenProvider tokenProvider;
     private final CustomUserDetailService customUserDetailService;
-
+    private final AuthConfig authConfig;
 
     @GetMapping("/accessToken")
-    public void findMemberByAccessToken(@RequestHeader("Authorization") String accessToken) {
-//        if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")) {
-//            accessToken = accessToken.substring(7);
-//        }
-//        if (tokenProvider.validateToken(accessToken, customUserDetailService.loadUserByUsername(tokenProvider.getUsername(accessToken)))) {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            String playerId = authentication.getName();
-//            System.out.println("playerId = " + playerId);
-//
-//        }
+    public ResponseEntity memberInfo(HttpServletRequest request) {
+        Member loginMember = authConfig.tokenValidationService(request);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (loginMember != null) {
+
+            return ResponseEntity.ok().body(loginMember);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @GetMapping("/cartInfo")
+    public ResponseEntity<Object> cartInfo(@RequestParam String playerId) {
+        System.out.println("cart 정보를 위한 playerId = " + playerId);
+
+        List<Cart> cartItem = purchaseService.getCartItem(playerId);
+        return ResponseEntity.ok().body(cartItem);
+    }
+
+    @PostMapping("/buyItem")
+    public void buyItem(@RequestBody PurchaseDto purchaseDto) {
+        System.out.println("purchaseDto.getPlayerId() = " + purchaseDto.getPlayerId());
+        System.out.println("purchaseDto.getRemainingPoint() = " + purchaseDto.getRemainingPoint());
+
+        List<PurchasedListDto> purchasedItems = purchaseDto.getPurchasedItems();
+        for (PurchasedListDto item : purchasedItems) {
+            System.out.println("item.getItemCategory() = " + item.getItemCategory());
+            System.out.println("item.getItemCount() = " + item.getItemCount());
+            System.out.println("item.getItemName() = " + item.getItemName());
+            System.out.println("item.itemCode() = " + item.getItemCode());
+
+            String category = item.getItemCategory();
+            Integer itemCount = item.getItemCount();
+            String itemName = item.getItemName();
+            String itemCode = item.getItemCode();
+            String playerId = purchaseDto.getPlayerId();
+            Integer remainingPoint = purchaseDto.getRemainingPoint();
+
+            // 멤버 포인트 변경
+            purchaseService.changeMemberPoint(playerId, remainingPoint);
+            // 구매아이템 DB에 아이템을 소유한 member의 Id, 소유한 item quantity 저장
+            purchaseService.savePurchaseInfoInItem(playerId, category, itemName, itemCount, itemCode);
+        }
 
     }
+
+
 }
+
+
+
 
