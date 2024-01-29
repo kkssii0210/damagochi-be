@@ -307,6 +307,7 @@ public class BattleService {
     public BattleMessageResDto useItem(BattleMessageResDto resDto, Long itemId) {
         Inventory myItem = inventoryRepository.findById(itemId).get();
         Mong myMong = mongRepository.findById(resDto.getMongAId()).get();
+        resDto.setTurn(myMong.getName());
         int maxHp = myMong.getHealth();
         int addHp = 0;
         if (myItem.getQuantity() == 1) {
