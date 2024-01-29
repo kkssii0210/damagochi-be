@@ -35,15 +35,16 @@ public class CartController {
 
     // 카트에 아이템 추가하기
     @PostMapping("/add")
-    public ResponseEntity addCart(@RequestBody CartReqDto cartReqDto) {
+    public ResponseEntity<Object> addCart(@RequestBody CartReqDto cartReqDto) {
         System.out.println("cartReqDto.getStoreId() = " + cartReqDto.getStoreId());
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
         System.out.println("cartReqDto.getPlayerId() = " + cartReqDto.getPlayerId());
         System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
         System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
-        cartService.addCart(cartReqDto);
+        System.out.println("cartReqDto.get = " + cartReqDto.getItemCode());
+        Cart cart = cartService.addCart(cartReqDto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().body(cart);
     }
 
     // 카트 정보 가져오기

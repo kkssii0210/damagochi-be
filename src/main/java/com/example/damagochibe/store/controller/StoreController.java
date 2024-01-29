@@ -131,6 +131,7 @@ public class StoreController {
             combinedStore.setItemCategory(food.getCategory());
             combinedStore.setItemFunction(food.getFoodFunction());
             combinedStore.setItemPrice(food.getFoodPrice());
+            combinedStore.setItemCode(food.getFoodCode());
             combinedStore.setItemFiles(storeService.getItemFileUrls(food.getFoodId(), food.getCategory()));
         }
 
@@ -140,6 +141,7 @@ public class StoreController {
             combinedStore.setItemCategory(liquidMedicine.getCategory());
             combinedStore.setItemFunction(liquidMedicine.getLiquidMedicineFunction());
             combinedStore.setItemPrice(liquidMedicine.getLiquidMedicinePrice());
+            combinedStore.setItemCode(liquidMedicine.getLiquidMedicineCode());
             combinedStore.setItemFiles(storeService.getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()));
         }
 
@@ -149,6 +151,7 @@ public class StoreController {
             combinedStore.setItemCategory(map.getCategory());
             combinedStore.setItemFunction(map.getMapFunction());
             combinedStore.setItemPrice(map.getMapPrice());
+            combinedStore.setItemCode(map.getMapCode());
             combinedStore.setItemFiles(storeService.getItemFileUrls(map.getMymapId(), map.getCategory()));
         }
 

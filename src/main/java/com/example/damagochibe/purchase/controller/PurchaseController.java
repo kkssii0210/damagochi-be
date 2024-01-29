@@ -52,17 +52,19 @@ public class PurchaseController {
             System.out.println("item.getItemCategory() = " + item.getItemCategory());
             System.out.println("item.getItemCount() = " + item.getItemCount());
             System.out.println("item.getItemName() = " + item.getItemName());
+            System.out.println("item.itemCode() = " + item.getItemCode());
 
             String category = item.getItemCategory();
-            String itemName = item.getItemName();
             Integer itemCount = item.getItemCount();
+            String itemName = item.getItemName();
+            String itemCode = item.getItemCode();
             String playerId = purchaseDto.getPlayerId();
             Integer remainingPoint = purchaseDto.getRemainingPoint();
 
             // 멤버 포인트 변경
             purchaseService.changeMemberPoint(playerId, remainingPoint);
             // 구매아이템 DB에 아이템을 소유한 member의 Id, 소유한 item quantity 저장
-            purchaseService.savePurchaseInfoInItem(playerId, category, itemName, itemCount);
+            purchaseService.savePurchaseInfoInItem(playerId, category, itemName, itemCount, itemCode);
         }
 
     }

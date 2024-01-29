@@ -18,5 +18,6 @@ public class Purchase {
     private Long memberId;
     private String category;
     private String itemName;
+    private String itemCode;
     private Integer ownedItemCount;
 }

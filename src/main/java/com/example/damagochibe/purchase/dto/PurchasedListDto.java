@@ -16,4 +16,5 @@ public class PurchasedListDto {
     private String itemName;
     private String itemCategory;
     private Integer itemCount;
+    private String itemCode;
 }

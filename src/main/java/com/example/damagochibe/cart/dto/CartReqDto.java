@@ -9,4 +9,5 @@ public class CartReqDto {
     private String category;
     private Integer itemCount;
     private String itemName;
+    private String itemCode;
 }

@@ -1,17 +1,9 @@
 package com.example.damagochibe.purchase.service;
 
-import com.example.damagochibe.Item.food.entity.Food;
-import com.example.damagochibe.Item.food.repository.FoodRepository;
-import com.example.damagochibe.Item.liquidMedicine.entity.LiquidMedicine;
-import com.example.damagochibe.Item.liquidMedicine.repository.LiquidMedicineRepository;
-import com.example.damagochibe.Item.mapBackground.background.entity.Mymap;
-import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
 import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.repository.CartRepository;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.repository.MemberRepository;
-import com.example.damagochibe.purchase.dto.PurchaseDto;
-import com.example.damagochibe.purchase.dto.PurchasedListDto;
 import com.example.damagochibe.purchase.entity.Purchase;
 import com.example.damagochibe.purchase.repository.PurchaseRepository;
 import jakarta.transaction.Transactional;
@@ -51,17 +43,19 @@ public class PurchaseService {
     }
 
     // 구매 내역 저장
-    public void savePurchaseInfoInItem(String playerId, String category, String itemName, Integer itemCount) {
+    public void savePurchaseInfoInItem(String playerId, String category, String itemName, Integer itemCount, String itemCode) {
         System.out.println("서비스에 넘어가는지 확인 playerId = " + playerId);
         System.out.println("category = " + category);
         System.out.println("itemName = " + itemName);
         System.out.println("itemCount = " + itemCount);
+        System.out.println("itemCode = " + itemCode);
 
         // playerId로 memberId찾아서 purchase 리포지토리에 저장
         Long memberId = memberRepository.findMemberIdByPlayerId(playerId);
 
         // 만약 itemName, memberId로 찾았는데 이미 존재하면 item수량만 기존 수량에서 +
         Optional<Purchase> presentInfo = purchaseRepository.findByMemberIdAndItemName(memberId, itemName);
+
         if (presentInfo.isPresent()) {
             Purchase info = presentInfo.get();
             Integer oldCount = info.getOwnedItemCount();
@@ -74,6 +68,7 @@ public class PurchaseService {
                     .memberId(memberId)
                     .category(category)
                     .itemName(itemName)
+                    .itemCode(itemCode)
                     .ownedItemCount(itemCount)
                     .build();
             purchaseRepository.save(items);

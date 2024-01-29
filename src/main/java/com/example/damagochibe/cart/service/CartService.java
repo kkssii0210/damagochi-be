@@ -34,6 +34,7 @@ public class CartService {
         System.out.println("cartReqDto.getCategory() = " + cartReqDto.getCategory());
         System.out.println("cartReqDto.getItemCount() = " + cartReqDto.getItemCount());
         System.out.println("cartReqDto.getItemName() = " + cartReqDto.getItemName());
+        System.out.println("cartReqDto.getItemCode() = " + cartReqDto.getItemCode());
 
         // 저장할 때 같은 이름이 있다면, 새로 저장되는게 아닌 기존 수량에서 + 되도록 해야함. 없다면 새로 저장
         String itemName = cartReqDto.getItemName();
@@ -57,6 +58,7 @@ public class CartService {
     }
 
     private Cart createCartItem(CartReqDto cartReqDto) {
+        System.out.println("********cartReqDto.getItemCode() = " + cartReqDto.getItemCode());
         //분류가 food면 카트 리포지토리에 category 푸드와, 멤버의 playerId 저장
         // food이면서 storeId(foodId)를 만족해야함
         if (cartReqDto.getCategory().equals("food")) {
@@ -68,7 +70,8 @@ public class CartService {
                     .cartItemCategory(food.getCategory())
                     .cartItemName(food.getFoodName())
                     .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(food.getFoodPrice()).build();
+                    .cartItemPrice(food.getFoodPrice())
+                    .cartItemCode(cartReqDto.getItemCode()).build();
             return cartRepository.save(cart);
         }
 
@@ -80,7 +83,8 @@ public class CartService {
                     .cartItemCategory(liquidMedicine.getCategory())
                     .cartItemName(liquidMedicine.getLiquidMedicineName())
                     .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(liquidMedicine.getLiquidMedicinePrice()).build();
+                    .cartItemPrice(liquidMedicine.getLiquidMedicinePrice())
+                    .cartItemCode(cartReqDto.getItemCode()).build();
             return cartRepository.save(cart);
         }
 
@@ -92,7 +96,8 @@ public class CartService {
                     .cartItemCategory(map.getCategory())
                     .cartItemName(map.getMapName())
                     .cartItemCount(cartReqDto.getItemCount())
-                    .cartItemPrice(map.getMapPrice()).build();
+                    .cartItemPrice(map.getMapPrice())
+                    .cartItemCode(cartReqDto.getItemCode()).build();
             return cartRepository.save(cart);
         }
         return null;

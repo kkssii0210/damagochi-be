@@ -148,6 +148,7 @@ public class StoreService {
                         .itemName(food.getFoodName())
                         .itemFunction(food.getFoodFunction())
                         .itemPrice(food.getFoodPrice())
+                        .itemCode(food.getFoodCode())
                         .itemFiles(getItemFileUrls(food.getFoodId(), food.getCategory()))
                         .build())
                 .collect(Collectors.toList());
@@ -188,6 +189,7 @@ public class StoreService {
                         .itemName(liquidMedicine.getLiquidMedicineName())
                         .itemCategory(liquidMedicine.getCategory())
                         .itemPrice(liquidMedicine.getLiquidMedicinePrice())
+                        .itemCode(liquidMedicine.getLiquidMedicineCode())
                         .itemFiles(getItemFileUrls(liquidMedicine.getLiquidMedicineId(), liquidMedicine.getCategory()))
                         .build())
                 .collect(Collectors.toList());
@@ -208,6 +210,7 @@ public class StoreService {
                         .itemName(myMap.getMapName())
                         .itemCategory(myMap.getCategory())
                         .itemPrice(myMap.getMapPrice())
+                        .itemCode(myMap.getMapCode())
                         .itemFiles(getItemFileUrls(myMap.getMymapId(), myMap.getCategory()))
                         .build())
                 .collect(Collectors.toList());
