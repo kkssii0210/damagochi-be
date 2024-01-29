@@ -49,10 +49,21 @@ public class BattleService {
 
     public void updateBattleRooms(String sessionId) {
         BattleRoom room = findBattleRoomBySessionId(sessionId);
+        BattleMessageResDto battleMessageResDto = BattleMessageResDto.builder()
+                .battleRoomId(room.getBattleRoomId())
+                .mongAId(room.getStatsMap().get("A") != null ? room.getStatsMap().get("A").getMongId() : null)
+                .mongBId(room.getStatsMap().get("B") != null ? room.getStatsMap().get("B").getMongId() : null)
+                .nowTurn(room.getNowTurn())
+                .totalTurn(room.getTotalTurn())
+                .sessionIds(room.getSessionIds())
+                .turn(room.getStatsMap().get("A").getName())
+                .healthA(room.getStatsMap().get("A").getHealth())
+                .healthB(room.getStatsMap().get("B").getHealth())
+                .build();
         log.info("보낼 세션!!! " + sessionId);
         messagingTemplate.convertAndSend(
                 "/topic/battleRoom/" + room.getBattleRoomId(),
-                room // 현재 방의 상태 데이터
+                battleMessageResDto // 현재 방의 상태 데이터
         );
         log.info("Updated battle rooms sent to respective participants");
     }
@@ -67,6 +78,7 @@ public class BattleService {
         // MongStats 인스턴스 생성 또는 조회
         MongStats stats = MongStats.builder()
                 .mongId(mongId)
+                .name(mong.getName())
                 .health(mong.getHealth())
                 .attribute(mong.getAttribute())
                 .defense(mong.getDefense())
@@ -240,6 +252,7 @@ public class BattleService {
     public BattleMessageResDto attack(BattleMessageResDto resDto) {
         Optional<Mong> mongA = mongInfoRepo.findById(resDto.getMongAId());
         Optional<Mong> mongB = mongInfoRepo.findById(resDto.getMongBId());
+
 
         int damege = mongA.get().getStrength() * mongA.get().getAgility() / mongB.get().getDefense();
         double randomValue = 0.9 + (Math.random() * 0.2);

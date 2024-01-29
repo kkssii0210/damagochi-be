@@ -38,16 +38,6 @@ public class BattleController {
         Long mongId = mongInfoRepo.findMongByPlayerId(memberId);
         log.info("mongId!!! : " + mongId);
         BattleRoom battleRoom = battleService.joinOrCreateRoom(sessionId,mongId);
-        // 클라이언트에게 방 ID를 먼저 전송
-        messagingTemplate.convertAndSend(
-                "/queue/battleRoomInfo", // 사용자별로 대기열을 설정
-                battleRoom.getBattleRoomId()
-        );
-//        BattleMessageResDto response = BattleMessageResDto.builder()
-//                .battleRoomId(battleRoom.getBattleRoomId())
-//                .build();
-//        // 모든 구독자에게 새로운 BattleRoom 정보 전송
-//        messagingTemplate.convertAndSend("/topic/battleRooms", response);
     }
     @GetMapping("/api/battleRooms")
     public ResponseEntity<List<BattleRoom>> getBattleRooms() {

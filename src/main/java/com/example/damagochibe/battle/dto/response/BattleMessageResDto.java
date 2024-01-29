@@ -3,6 +3,8 @@ package com.example.damagochibe.battle.dto.response;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @Builder
 public class BattleMessageResDto {
@@ -22,4 +24,6 @@ public class BattleMessageResDto {
     private String turn;
     private Long itemId;
     private Double attackBuff;
+    // 세션 ID를 위한 필드를 추가
+    private Map<String, String> sessionIds;
 }

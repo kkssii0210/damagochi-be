@@ -52,8 +52,7 @@ public class MongController {
         System.out.println("resDto = " + resDto);
         BattleMessageResDto rrr = battleService.attack(resDto);
         System.out.println("rrr = " + rrr);
-        simpMessagingTemplate.convertAndSend("/topic/battleRooms/" + resDto.getBattleRoomId(), rrr);
-
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);
         return rrr;
     }
 
@@ -63,7 +62,6 @@ public class MongController {
         System.out.println("resDto.getItemId() = " + resDto.getItemId());
 
         BattleMessageResDto rrr = battleService.useItem(resDto, resDto.getItemId());
-        simpMessagingTemplate.convertAndSend("/topic/battleRooms/" + resDto.getBattleRoomId(), rrr);
-        return rrr;
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);        return rrr;
     }
 }
