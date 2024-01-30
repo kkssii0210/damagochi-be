@@ -53,9 +53,9 @@ public class BattleService {
                 .battleRoomId(room.getBattleRoomId())
                 .mongAId(room.getStatsMap().get("A") != null ? room.getStatsMap().get("A").getMongId() : null)
                 .mongBId(room.getStatsMap().get("B") != null ? room.getStatsMap().get("B").getMongId() : null)
-                .nowTurn(room.getNowTurn())
                 .totalTurn(room.getTotalTurn())
                 .sessionIds(room.getSessionIds())
+                .nowTurn(room.getNowTurn())
                 .turn(room.getStatsMap().get("A").getName())
                 .healthA(room.getStatsMap().get("A").getHealth())
                 .healthB(room.getStatsMap().get("B").getHealth())
@@ -300,6 +300,7 @@ public class BattleService {
         resDto.setTurn(mongB.get().getName());
         resDto.setHealthA(resDto.getHealthA());
         resDto.setHealthB(resDto.getHealthB() - finalDamege);
+        resDto.setTotalTurn(resDto.getTotalTurn() + 1);
         resDto.setBattleLog(mongA.get().getName() + "이(가)" + mongB.get().getName() + "을(를) 공격 (데미지 " + finalDamege + ")");
         System.out.println("finalDamege = " + finalDamege);
         return resDto;
