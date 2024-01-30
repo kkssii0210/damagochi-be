@@ -11,4 +11,6 @@ public interface MymapRepository extends JpaRepository<Mymap,Long> {
 
     @Query("SELECT m FROM Mymap m WHERE m.mapName = :itemName")
     Mymap findByName(String itemName);
+    @Query("SELECT m.fileUrl FROM Mymap m WHERE m.mapCode = :mapCode")
+    String findUrlByMapCode(String mapCode);
 }
