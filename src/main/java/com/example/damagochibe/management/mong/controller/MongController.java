@@ -1,6 +1,7 @@
 package com.example.damagochibe.management.mong.controller;
 
 import com.example.damagochibe.auth.security.CustomUserDetail;
+import com.example.damagochibe.battle.dto.request.BattleEndMessageDto;
 import com.example.damagochibe.battle.dto.response.BattleMessageResDto;
 import com.example.damagochibe.battle.service.BattleService;
 import com.example.damagochibe.management.mong.service.MongService1;
@@ -52,7 +53,7 @@ public class MongController {
         System.out.println("resDto = " + resDto);
         BattleMessageResDto rrr = battleService.attack(resDto);
         System.out.println("rrr = " + rrr);
-        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/" + resDto.getBattleRoomId(), rrr);
         return rrr;
     }
 
@@ -62,6 +63,14 @@ public class MongController {
         System.out.println("resDto.getItemId() = " + resDto.getItemId());
 
         BattleMessageResDto rrr = battleService.useItem(resDto, resDto.getItemId());
-        simpMessagingTemplate.convertAndSend("/topic/battleRoom/"+ resDto.getBattleRoomId(), rrr);        return rrr;
+        simpMessagingTemplate.convertAndSend("/topic/battleRoom/" + resDto.getBattleRoomId(), rrr);
+        return rrr;
+    }
+
+    @PutMapping("/battleEnd")
+    public void battleEnd(
+                          @RequestBody BattleEndMessageDto battleEndMessageDto) {
+        System.out.println(battleEndMessageDto.getEndMessage());
+        mongService1.battleEnd(battleEndMessageDto.getEndMessage(), battleEndMessageDto.getMemberId());
     }
 }

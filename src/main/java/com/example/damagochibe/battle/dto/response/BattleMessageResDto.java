@@ -26,4 +26,6 @@ public class BattleMessageResDto {
     private Double attackBuff;
     // 세션 ID를 위한 필드를 추가
     private Map<String, String> sessionIds;
+
+    private String battleLog;
 }

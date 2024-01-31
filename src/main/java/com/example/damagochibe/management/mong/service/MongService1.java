@@ -63,4 +63,14 @@ public class MongService1 {
         map.put("userName", userName);
         return map;
     }
+
+    public void battleEnd(String endMessage, String memberId) {
+        Mong mong = mongRepository.findByMemberId(memberId);
+        if (endMessage.equals("승리!!")) {
+            mong.setWin(mong.getWin() + 1);
+        } else if (endMessage.equals("패배!!")) {
+            mong.setLose(mong.getLose() + 1);
+        }
+        mongRepository.save(mong);
+    }
 }
