@@ -21,7 +21,7 @@ public class Inventory {
     @Column
     private Long id;
     @Column(nullable = false)
-    private String memberId;
+    private Long memberId;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)

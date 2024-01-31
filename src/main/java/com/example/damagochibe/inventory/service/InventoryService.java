@@ -13,7 +13,7 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
 
-    public List<Inventory> getItems(String memberId) {
+    public List<Inventory> getItems(Long memberId) {
         return inventoryRepository.findAllByMemberId(memberId);
 
     }
