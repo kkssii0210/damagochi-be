@@ -258,7 +258,7 @@ public class BattleService {
         double randomValue = 0.9 + (Math.random() * 0.2);
 
         if (mongA.get().getAttribute().equals("불")) {
-            if (mongB.get().getAttribute().equals("풀")) {
+            if (mongB.get().getAttribute().equals("전기")) {
                 damege = (int) (damege * 1.2);
             } else if (mongB.get().getAttribute().equals("물")) {
                 damege = (int) (damege * 0.8);
@@ -268,12 +268,12 @@ public class BattleService {
         if (mongA.get().getAttribute().equals("물")) {
             if (mongB.get().getAttribute().equals("불")) {
                 damege = (int) (damege * 1.2);
-            } else if (mongB.get().getAttribute().equals("풀")) {
+            } else if (mongB.get().getAttribute().equals("전기")) {
                 damege = (int) (damege * 0.8);
             }
         }
 
-        if (mongA.get().getAttribute().equals("풀")) {
+        if (mongA.get().getAttribute().equals("전기")) {
             if (mongB.get().getAttribute().equals("물")) {
                 damege = (int) (damege * 1.2);
             } else if (mongB.get().getAttribute().equals("불")) {
