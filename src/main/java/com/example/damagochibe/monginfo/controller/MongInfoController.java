@@ -1,11 +1,14 @@
 package com.example.damagochibe.monginfo.controller;
 
+import com.example.damagochibe.auth.config.AuthConfig;
 import com.example.damagochibe.auth.dto.request.MemberAuthDto;
 import com.example.damagochibe.auth.security.CustomUserDetailService;
 import com.example.damagochibe.auth.security.TokenProvider;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.service.MemberService;
+import com.example.damagochibe.monginfo.dto.MongBattleDto;
 import com.example.damagochibe.monginfo.entity.Mong;
+import com.example.damagochibe.monginfo.repository.MongInfoRepo;
 import com.example.damagochibe.monginfo.service.MongInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,81 +25,81 @@ import java.util.List;
 @RequestMapping("/api/monginfo")
 public class MongInfoController {
     private final MongInfoService mongInfoService;
-    private final TokenProvider tokenProvider;
-    private final CustomUserDetailService customUserDetailService;
-    private final MemberService memberService;
+    private final AuthConfig authConfig;
+    private final MongInfoRepo mongInfoRepo;
 
     @GetMapping
-    public ResponseEntity<List<Mong>>getAllMongs(){
+    public ResponseEntity<List<Mong>> getAllMongs() {
         List<Mong> mongs = mongInfoService.getAllMongs();
         return ResponseEntity.ok(mongs);
     }
-    //Mong 조회
-    //TODO: 추후 리팩토링 필요함.
-    @GetMapping("jeon")
-    public ResponseEntity<Mong> getMongById(@RequestHeader("Authorization")String accessToken){
-        if(StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer ")){
-            accessToken = accessToken.substring(7);
-        }
-        if(tokenProvider.validateToken(accessToken, customUserDetailService.loadUserByUsername(tokenProvider.getUsername(accessToken)))){
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            MemberAuthDto dto = new MemberAuthDto(authentication.getName(),authentication.getAuthorities().stream().toList().get(0).toString());
-            String playerId = dto.getPlayerId();
-            Member byMemberPlayerId = memberService.findByMemberPlayerId(playerId);
-            Long memberId = byMemberPlayerId.getMemberId();
-            Mong mong = mongInfoService.findMongByMemberId(memberId);
-            if (mong == null){
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(mong);
-        }else {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/id")
+    public ResponseEntity getMongById(@RequestHeader("Authorization") String accessToken) {
+        System.out.println("!!!! = "+accessToken);
+        accessToken = accessToken.substring(7);
+        Member member = authConfig.tokenValidationServiceV1(accessToken);
+        System.out.println("44444 = " +member.getMemberId());
+        Mong mongByMemberId = mongInfoRepo.findMongByMemberId(member.getPlayerId());
+        System.out.println("5555 = "+mongByMemberId.getId());
+        if (mongByMemberId != null) {
+            return ResponseEntity.ok(mongByMemberId);
         }
-//멤버 아이디로 mong가져오는 로직필요,
-        //mong 존재 여부
+        return ResponseEntity.notFound().build();
     }
-    //새로운 Mong 생성 create
+
     @PostMapping
-    public ResponseEntity<Mong> addMong(@RequestBody Mong mong){
+    public ResponseEntity<Mong> addMong(@RequestBody Mong mong) {
         Mong addMong = mongInfoService.addMong(mong);
         return ResponseEntity.status(HttpStatus.CREATED).body(addMong);
     }
-//    Mong Info 수정......?????? TODO : 다시 확인 할 것 : 내가 구현하려는 것, Mong에 대한 정보를 보여주는 것..... CRUD 혼동...
-    //아래_수정 메소드 _ 이전 프로젝트랑 비교해보기
+
     @PutMapping("{id}")
-    public ResponseEntity<Mong> updateMong(@PathVariable Long id, @RequestBody Mong mong ){
+    public ResponseEntity<Mong> updateMong(@PathVariable Long id, @RequestBody Mong mong) {
         Mong updatedMong = mongInfoService.updateMong(id, mong);
-        if(updatedMong == null){
+        if (updatedMong == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedMong);
     }
-    //삭제 메소드 delete method
+
     @DeleteMapping("/{id}")
-//    public ResponseEntity<???>
-public ResponseEntity<Void> deleteMong(@PathVariable Long id){
+    public ResponseEntity<Void> deleteMong(@PathVariable Long id) {
         mongInfoService.deleteMong(id);
         return ResponseEntity.notFound().build();
     }
-// BATTLE COMTROLLER CRUD
-//    @GetMapping("/battleInfo/{id}")
-//    public ResponseEntity<MongBattleDto> getMongBattleInfo(@PathVariable Long id){
-//        MongBattleDto battleInfo = mongInfoService.getMongBattleInfo(id);
-//        if(battleInfo == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(battleInfo);
-//    }
-//    @PostMapping("/battle/{id}")
-//    public ResponseEntity<MongBattleDto> createMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto createdBattleInfo = mongInfoService.createMongBattleInfo(id, mongBattleDto);
-//        return ResponseEntity.ok(createdBattleInfo);
-//    }
-//// Mong의 전투 정보 수정
-//    @PutMapping("/battle/{id}")
+
+    @GetMapping("/battleInfo/{id}")
+    public ResponseEntity<MongBattleDto> getMongBattleInfo(@PathVariable Long id) {
+        MongBattleDto battleInfo = mongInfoService.getMongBattleInfo(id);
+        if (battleInfo == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(battleInfo);
+    }
+
+//    @PutMapping("/battleInfo/{id}")
 //    public ResponseEntity<MongBattleDto> updateMongBattleInfo(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto) {
-//        MongBattleDto updatedBattleInfo = mongInfoService.updateMongBattleInfo(id, mongBattleDto);
-//        return ResponseEntity.ok(updatedBattleInfo);
+//        MongBattleDto existingInfo = mongInfoService.updateMongBattleInfo(id);
+//        if (mongBattleDto.getWin() > 0) {
+//            existingInfo.setWin(existingInfo.getWin() + 1);
+//        } else {
+//            existingInfo.setLose(existingInfo.getLose() + 1);
+//        }
+//        return ResponseEntity.ok(existingInfo);
 //    }
+    @PutMapping("/battleInfo/{id}/win")
+    public ResponseEntity<MongBattleDto> updateWin(@PathVariable Long id, @RequestBody MongBattleDto mongBattleDto){
+        MongBattleDto existingInfo = mongInfoService.updateWin(id);
+        existingInfo.setWin(existingInfo.getWin() + 1);
+        return ResponseEntity.ok(existingInfo);
+    }
+
+    @PutMapping("/battleInfo/{id}/lose")
+    public ResponseEntity<MongBattleDto> updateLose(@PathVariable Long id, @PathVariable MongBattleDto mongBattleDto){
+        MongBattleDto existingInfo = mongInfoService.updateLose(id);
+        existingInfo.setLose(existingInfo.getLose() + 1);
+        return ResponseEntity.ok(existingInfo);
+
+    }
 }

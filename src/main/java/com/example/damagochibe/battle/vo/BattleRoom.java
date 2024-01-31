@@ -160,13 +160,24 @@ public class BattleRoom {
         }
     }
     public void removeSession(String sessionId) {
-        if (sessionIds.get("A").equals(sessionId)) {
+        boolean isRemoved = false;
+
+        if (sessionId.equals(sessionIds.get("A"))) {
             sessionIds.put("A", null);
-            statsMap.put("A",null);
-        } else if (sessionIds.get("B").equals(sessionId)) {
-            sessionIds.put("B", null);
-            statsMap.put("B",null);
+            statsMap.put("A", null);
+            isRemoved = true;
         }
-        log.info("Session removed: " + sessionId);
+
+        if (sessionId.equals(sessionIds.get("B"))) {
+            sessionIds.put("B", null);
+            statsMap.put("B", null);
+            isRemoved = true;
+        }
+
+        if (isRemoved) {
+            log.info("Session removed: " + sessionId);
+        } else {
+            log.info("Session to remove not found: " + sessionId);
+        }
     }
 }

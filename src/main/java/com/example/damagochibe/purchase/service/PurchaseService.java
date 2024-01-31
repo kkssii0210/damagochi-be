@@ -1,9 +1,12 @@
 package com.example.damagochibe.purchase.service;
 
+import com.example.damagochibe.Item.mapBackground.background.dto.FindMymapResDto;
+import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
 import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.repository.CartRepository;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.repository.MemberRepository;
+import com.example.damagochibe.purchase.dto.FindMymapListDto;
 import com.example.damagochibe.purchase.entity.Purchase;
 import com.example.damagochibe.purchase.repository.PurchaseRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,6 +24,7 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
+    private final MymapRepository mymapRepository;
 
     // 멤버 정보 불러오기
     public void purchase(Long memberId) {
@@ -75,4 +80,13 @@ public class PurchaseService {
         }
     }
 
+    public FindMymapListDto findMymap(String playerId) {
+        Long memberId = memberRepository.findMemberIdByPlayerId(playerId);
+        List<String> itemCodeByMemberId = purchaseRepository.findItemCodeByMemberId(memberId);
+        List<String> fileUrls = itemCodeByMemberId.stream()
+                .map(mymapRepository::findUrlByMapCode)
+                .toList();
+
+        return new FindMymapListDto(fileUrls);
+    }
 }
