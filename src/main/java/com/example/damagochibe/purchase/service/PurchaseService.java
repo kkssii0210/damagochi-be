@@ -4,6 +4,8 @@ import com.example.damagochibe.Item.mapBackground.background.dto.FindMymapResDto
 import com.example.damagochibe.Item.mapBackground.background.repository.MymapRepository;
 import com.example.damagochibe.cart.entity.Cart;
 import com.example.damagochibe.cart.repository.CartRepository;
+import com.example.damagochibe.inventory.enetity.Inventory;
+import com.example.damagochibe.inventory.repository.InventoryRepository;
 import com.example.damagochibe.member.entity.Member;
 import com.example.damagochibe.member.repository.MemberRepository;
 import com.example.damagochibe.purchase.dto.FindMymapListDto;
@@ -25,6 +27,7 @@ public class PurchaseService {
     private final MemberRepository memberRepository;
     private final CartRepository cartRepository;
     private final MymapRepository mymapRepository;
+    private final InventoryRepository inventoryRepository;
 
     // 멤버 정보 불러오기
     public void purchase(Long memberId) {
@@ -60,13 +63,22 @@ public class PurchaseService {
 
         // 만약 itemName, memberId로 찾았는데 이미 존재하면 item수량만 기존 수량에서 +
         Optional<Purchase> presentInfo = purchaseRepository.findByMemberIdAndItemName(memberId, itemName);
+        Optional<Inventory> inventoryInfo = inventoryRepository.findByMemberIdAndItemName(memberId, itemName);
 
-        if (presentInfo.isPresent()) {
+        if (presentInfo.isPresent() && inventoryInfo.isPresent()) {
             Purchase info = presentInfo.get();
             Integer oldCount = info.getOwnedItemCount();
             int newCount = oldCount + itemCount;
             info.setOwnedItemCount(newCount);
             purchaseRepository.save(info);
+
+            //인벤토리에도 구매한 아이템 저장
+            Inventory invenInfo = inventoryInfo.get();
+            Integer oldQuantity = invenInfo.getQuantity();
+            int newQuantity = oldQuantity + itemCount;
+            invenInfo.setQuantity(newQuantity);
+            inventoryRepository.save(invenInfo);
+
 
         } else if (presentInfo.isEmpty()) {
             Purchase items = Purchase.builder()
@@ -77,6 +89,17 @@ public class PurchaseService {
                     .ownedItemCount(itemCount)
                     .build();
             purchaseRepository.save(items);
+
+            Inventory inventory = Inventory.builder()
+                    .memberId(memberId.toString())
+                    .category(category)
+                    .name(itemName)
+                    .itemCode(itemCode)
+                    .quantity(itemCount)
+                    .image("image")
+                    .build();
+            inventoryRepository.save(inventory);
+            System.out.println("inventory.getMemberId() = " + inventory.getMemberId());
         }
     }
 
