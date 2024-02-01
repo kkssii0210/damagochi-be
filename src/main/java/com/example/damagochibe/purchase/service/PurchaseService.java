@@ -68,6 +68,7 @@ public class PurchaseService {
         Optional<Inventory> inventoryInfo = inventoryRepository.findByMemberIdAndItemName(memberId, itemName);
 
         if (presentInfo.isPresent() && inventoryInfo.isPresent()) {
+            log.info("Call@@@@@");
             Purchase info = presentInfo.get();
             Integer oldCount = info.getOwnedItemCount();
             int newCount = oldCount + itemCount;
