@@ -91,7 +91,7 @@ public class PurchaseService {
             purchaseRepository.save(items);
 
             Inventory inventory = Inventory.builder()
-                    .memberId(memberId.toString())
+                    .memberId(memberId)
                     .category(category)
                     .name(itemName)
                     .itemCode(itemCode)
