@@ -13,6 +13,7 @@ import com.example.damagochibe.purchase.entity.Purchase;
 import com.example.damagochibe.purchase.repository.PurchaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final MemberRepository memberRepository;
@@ -80,7 +82,8 @@ public class PurchaseService {
             inventoryRepository.save(invenInfo);
 
 
-        } else if (presentInfo.isEmpty()) {
+        } else if (presentInfo.isEmpty() && inventoryInfo.isEmpty()) {
+            log.info("call!!!!!!");
             Purchase items = Purchase.builder()
                     .memberId(memberId)
                     .category(category)
