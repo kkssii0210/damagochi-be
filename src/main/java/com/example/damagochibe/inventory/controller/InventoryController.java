@@ -17,7 +17,7 @@ public class InventoryController {
     private final InventoryService inventoryService;
 
     @GetMapping
-    public List<Inventory> getItems(String memberId) {
+    public List<Inventory> getItems(Long memberId) {
         return inventoryService.getItems(memberId);
 
     }

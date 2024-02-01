@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
-    List<Inventory> findAllByMemberId(String memberId);
+    List<Inventory> findAllByMemberId(Long memberId);
 
     @Query("SELECT i FROM Inventory i WHERE i.memberId = :memberId AND i.name = :itemName")
     Optional<Inventory> findByMemberIdAndItemName(Long memberId, String itemName);

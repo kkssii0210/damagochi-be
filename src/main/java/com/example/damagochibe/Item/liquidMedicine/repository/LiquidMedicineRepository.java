@@ -9,4 +9,7 @@ public interface LiquidMedicineRepository extends JpaRepository<LiquidMedicine, 
 
     @Query("SELECT l FROM LiquidMedicine l WHERE l.liquidMedicineName = :itemName")
     LiquidMedicine findByName(String itemName);
+
+    @Query("select fileUrl from LiquidMedicine where liquidMedicineCode = :itemCode ")
+    String findByCode(String itemCode);
 }
