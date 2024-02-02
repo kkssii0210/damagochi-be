@@ -85,7 +85,6 @@ public class BattleService {
                 .strength(mong.getStrength())
                 .agility(mong.getAgility())
                 .build();
-
         // 가용한 방 찾기
         for (BattleRoom room : battleRooms.values()) {
             if (!room.isFull()) {
